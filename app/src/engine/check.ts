@@ -44,6 +44,16 @@ export function classifyError(task: Task, values: Values): ErrorKind | null {
   return classifyValue(eq.op, eq.a, eq.b, given);
 }
 
+/**
+ * The fact a blank is about, with its result: the line's «x op y = blank», or the task's main fact
+ * (the product blank of ×1/×2, the boxes of :3, the «4 × ?» blank of ×1).
+ */
+export function blankFact(task: Task, blankIndex: number): { op: Op; a: number; b: number; result: number } {
+  const eq = task.kind === 'div-compose' ? null : equationOf(task, blankIndex);
+  const f = eq ?? task.main;
+  return { op: f.op, a: f.a, b: f.b, result: apply(f.op, f.a, f.b) };
+}
+
 /** The «x op y = blank» equation a blank answers; for the product blank of ×1/×2 it is the main fact. */
 function equationOf(task: Task, blankIndex: number): { op: Op; a: number; b: number } | null {
   const line = task.lines.find((l) => l.some((p) => p.t === 'blank' && p.i === blankIndex));

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ColumnTask, type CheckRecord, type DiskMode, type Outcome } from '../column/ColumnTask';
 import { BackIcon, CoinIcon } from '../components/Icons';
-import { columnReviewTasks, saveAttempt } from '../data/attempts';
+import { reviewTasks, saveAttempt } from '../data/attempts';
+import { FactTask } from '../facts/FactTask';
+import type { FactMode } from '../facts/texts';
 import { addCoins, recordLevelStars } from '../data/profiles';
 import type { Profile } from '../data/types';
 import { getLevel, ISLANDS, LEVELS } from '../engine/levels';
@@ -11,8 +13,24 @@ import type { Task } from '../engine/types';
 import { LevelDone } from './LevelDone';
 import './LevelRun.css';
 
-/** Disks are dragged on the first 3 tasks that carry or borrow, shown afterwards, hidden on a boss. */
+/**
+ * Disks are dragged on the first 3 tasks that carry or borrow, shown afterwards, hidden on a boss.
+ * × and : go the same way: objects to move on the first 3 tasks, then a picture or only the record.
+ */
 const CONCRETE_TASKS = 3;
+
+/** Levels about the picture keep it after the concrete tasks; the rest go to the record only. */
+const PICTURE_LEVELS = ['×1', '×2', ':1', ':2', ':3'];
+
+function factModes(levelId: string, boss: boolean, tasks: Task[]): FactMode[] {
+  return tasks.map((task, i): FactMode => {
+    if (boss) return 'abstract';
+    if (task.kind === 'fact-family') return 'pictorial';
+    if (levelId === ':5') return 'abstract';
+    if (i < CONCRETE_TASKS) return 'concrete';
+    return PICTURE_LEVELS.includes(levelId) ? 'pictorial' : 'abstract';
+  });
+}
 export const LEVEL_BONUS = 5;
 
 /** Stars for a level: 7, 9 or 10 right out of 10 (right = solved before the explanation). */
@@ -47,7 +65,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
   useEffect(() => {
     let alive = true;
     const islandLevels = LEVELS.filter((l) => l.island === level.island && !l.boss).map((l) => l.id);
-    void columnReviewTasks(profile.id, islandLevels).then((review) => {
+    void reviewTasks(profile.id, islandLevels).then((review) => {
       if (!alive) return;
       const tasks = buildLevel(levelId, { seed: randomSeed(), review: level.boss ? [] : review });
       setSlots(tasks.map((task) => ({ task, extra: false })));
@@ -71,6 +89,8 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
       return concrete <= CONCRETE_TASKS ? 'drag' : 'show';
     });
   }, [slots, level.boss]);
+
+  const modes = useMemo(() => (slots ? factModes(levelId, !!level.boss, slots.map((s) => s.task)) : []), [slots, levelId, level.boss]);
 
   if (!slots) return <div className="screen" />;
 
@@ -109,6 +129,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
       a: main.a,
       b: main.b,
       value: r.value,
+      values: r.values,
       correct: r.correct,
       error: r.error,
       tryNo: r.tryNo,
@@ -164,15 +185,27 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
           {profile.coins + earned}
         </span>
       </div>
-      <ColumnTask
-        key={`${run}-${index}-${slot.task.key}`}
-        task={slot.task}
-        pet={profile.pet}
-        petName={profile.petName}
-        diskMode={diskModes[index] ?? (level.boss ? 'none' : 'show')}
-        onCheck={record}
-        onDone={done}
-      />
+      {slot.task.kind === 'column' ? (
+        <ColumnTask
+          key={`${run}-${index}-${slot.task.key}`}
+          task={slot.task}
+          pet={profile.pet}
+          petName={profile.petName}
+          diskMode={diskModes[index] ?? (level.boss ? 'none' : 'show')}
+          onCheck={record}
+          onDone={done}
+        />
+      ) : (
+        <FactTask
+          key={`${run}-${index}-${slot.task.key}`}
+          task={slot.task}
+          pet={profile.pet}
+          petName={profile.petName}
+          mode={modes[index] ?? 'abstract'}
+          onCheck={record}
+          onDone={done}
+        />
+      )}
     </div>
   );
 }

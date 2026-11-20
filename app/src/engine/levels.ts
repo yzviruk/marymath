@@ -1,6 +1,6 @@
 import { columnAdd, columnSub, type ColumnInfo } from './column';
 import { EARLY_LIMIT, facts, LATE_LIMIT, type Fact } from './facts';
-import { sample, type Rng } from './rng';
+import { Rng, sample } from './rng';
 import { columnTask, commutativeTask, divComposeTask, factFamilyTask, factTask, repeatedAddTask } from './tasks';
 import type { IslandId, LevelId, Task } from './types';
 
@@ -12,6 +12,8 @@ export interface LevelDef {
   sample: string;
   boss?: boolean;
   make: (rng: Rng) => Task;
+  /** The same task again from its main numbers (`Task.main.a`, `.b`), e.g. for tomorrow's review. Not on bosses. */
+  rebuild?: (a: number, b: number) => Task;
 }
 
 const same = (a: number[], b: number[]) => a.length === b.length && a.every((v, i) => v === b[i]);
@@ -36,6 +38,7 @@ function addLevel(id: LevelId, title: string, sampleText: string, make: (rng: Rn
       const [a, b] = sample(() => make(rng), ([x, y]) => ok(columnAdd(x, y)));
       return columnTask(id, '+', a, b);
     },
+    rebuild: (a, b) => columnTask(id, '+', a, b),
   };
 }
 
@@ -52,13 +55,49 @@ function subLevel(id: LevelId, title: string, sampleText: string, make: (rng: Rn
       );
       return columnTask(id, '−', a, b);
     },
+    rebuild: (a, b) => columnTask(id, '−', a, b),
   };
 }
 
-function poolLevel(id: LevelId, island: IslandId, title: string, sampleText: string, pool: Fact[], make: (f: Fact, rng: Rng) => Task): LevelDef {
+type Build = (a: number, b: number, rng: Rng) => Task;
+
+/** A level drawing facts from `pool`; `args` turns a fact into the task's main numbers a, b. */
+function poolLevel(
+  id: LevelId,
+  island: IslandId,
+  title: string,
+  sampleText: string,
+  pool: Fact[],
+  args: (f: Fact) => [number, number],
+  build: Build,
+): LevelDef {
   if (pool.length < 10) throw new Error(`Рівень ${id}: замало фактів (${pool.length})`);
-  return { id, island, title, sample: sampleText, make: (rng) => make(rng.pick(pool), rng) };
+  return {
+    id,
+    island,
+    title,
+    sample: sampleText,
+    make: (rng) => {
+      const [a, b] = args(rng.pick(pool));
+      return build(a, b, rng);
+    },
+    rebuild: (a, b) => build(a, b, new Rng(a * 1000 + b)),
+  };
 }
+
+const ab = (f: Fact): [number, number] => [f.a, f.b];
+
+/** a × b: b boxes with a items each. */
+const mulFact =
+  (id: LevelId): Build =>
+  (a, b) =>
+    factTask(id, '×', a, b, { groups: b, size: a, mode: 'equal-groups' });
+
+/** a : b shared equally into b baskets. */
+const shareFact =
+  (id: LevelId): Build =>
+  (a, b) =>
+    factTask(id, ':', a, b, { groups: b, size: a / b, mode: 'share' });
 
 const has = (set: number[]) => (a: number, b: number) => set.includes(a) || set.includes(b);
 
@@ -89,6 +128,7 @@ const ADD: LevelDef[] = [
       );
       return columnTask('+7', '+', a, b);
     },
+    rebuild: (a, b) => columnTask('+7', '+', a, b),
   },
 ];
 
@@ -113,32 +153,30 @@ const SUB: LevelDef[] = [
 
 // ── Множення ───────────────────────────────────────────────────────────────
 const MUL: LevelDef[] = [
-  poolLevel('×1', 'mul', 'Рівні групи → додавання однакових', '4 + 4 + 4 = 4 × 3', facts(EARLY_LIMIT, (_a, b) => b <= 5), (f) =>
-    repeatedAddTask('×1', f.a, f.b),
+  poolLevel('×1', 'mul', 'Рівні групи → додавання однакових', '4 + 4 + 4 = 4 × 3', facts(EARLY_LIMIT, (_a, b) => b <= 5), ab, (a, b) =>
+    repeatedAddTask('×1', a, b),
   ),
-  poolLevel('×2', 'mul', 'Масиви, переставний закон', '2 × 5 = 5 × 2', facts(EARLY_LIMIT, (a, b) => a !== b), (f) =>
-    commutativeTask('×2', f.a, f.b),
+  poolLevel('×2', 'mul', 'Масиви, переставний закон', '2 × 5 = 5 × 2', facts(EARLY_LIMIT, (a, b) => a !== b), ab, (a, b) =>
+    commutativeTask('×2', a, b),
   ),
-  poolLevel('×3', 'mul', '× 2 і × 10', '2 × 7, 10 × 3', facts(LATE_LIMIT, has([2, 10])), (f) => factTask('×3', '×', f.a, f.b)),
-  poolLevel('×4', 'mul', '× 5', '5 × 4, 5 × 7', facts(LATE_LIMIT, has([5])), (f) => factTask('×4', '×', f.a, f.b)),
-  poolLevel('×5', 'mul', '× 3 і × 4', '3 × 6, 4 × 5', facts(LATE_LIMIT, has([3, 4])), (f) => factTask('×5', '×', f.a, f.b)),
-  poolLevel('×6', 'mul', '× 6 і × 7 (до 35)', '6 × 4, 7 × 5', facts(LATE_LIMIT, has([6, 7])), (f) => factTask('×6', '×', f.a, f.b)),
+  poolLevel('×3', 'mul', '× 2 і × 10', '2 × 7, 10 × 3', facts(LATE_LIMIT, has([2, 10])), ab, mulFact('×3')),
+  poolLevel('×4', 'mul', '× 5', '5 × 4, 5 × 7', facts(LATE_LIMIT, has([5])), ab, mulFact('×4')),
+  poolLevel('×5', 'mul', '× 3 і × 4', '3 × 6, 4 × 5', facts(LATE_LIMIT, has([3, 4])), ab, mulFact('×5')),
+  poolLevel('×6', 'mul', '× 6 і × 7 (до 35)', '6 × 4, 7 × 5', facts(LATE_LIMIT, has([6, 7])), ab, mulFact('×6')),
 ];
 
 // ── Ділення ────────────────────────────────────────────────────────────────
 // A fact a × b reads as «b boxes with a items each»: groups = b, size = a.
 const DIV: LevelDef[] = [
-  poolLevel(':1', 'div', 'Розклади порівну', '6 : 3', facts(EARLY_LIMIT), (f) =>
-    factTask(':1', ':', f.product, f.b, { groups: f.b, size: f.a, mode: 'share' }),
+  poolLevel(':1', 'div', 'Розклади порівну', '6 : 3', facts(EARLY_LIMIT), (f) => [f.product, f.b], shareFact(':1')),
+  poolLevel(':2', 'div', 'Групи по кілька', '10 : 2', facts(EARLY_LIMIT), (f) => [f.product, f.a], (a, b) =>
+    factTask(':2', ':', a, b, { groups: a / b, size: b, mode: 'group' }),
   ),
-  poolLevel(':2', 'div', 'Групи по кілька', '10 : 2', facts(EARLY_LIMIT), (f) =>
-    factTask(':2', ':', f.product, f.a, { groups: f.b, size: f.a, mode: 'group' }),
+  poolLevel(':3', 'div', 'Склади приклад за малюнком', '24 : 6 = 4', facts(LATE_LIMIT, (a, b) => a !== b), (f) => [f.product, f.b], (a, b, rng) =>
+    divComposeTask(':3', b, a / b, rng),
   ),
-  poolLevel(':3', 'div', 'Склади приклад за малюнком', '24 : 6 = 4', facts(LATE_LIMIT, (a, b) => a !== b), (f, rng) =>
-    divComposeTask(':3', f.b, f.a, rng),
-  ),
-  poolLevel(':4', 'div', 'Сімейство фактів', '5 × 3 → 15 : 3, 15 : 5', facts(LATE_LIMIT, (a, b) => a !== b), (f) =>
-    factFamilyTask(':4', f.a, f.b),
+  poolLevel(':4', 'div', 'Сімейство фактів', '5 × 3 → 15 : 3, 15 : 5', facts(LATE_LIMIT, (a, b) => a !== b), ab, (a, b) =>
+    factFamilyTask(':4', a, b),
   ),
   {
     id: ':5',
@@ -149,8 +187,9 @@ const DIV: LevelDef[] = [
       // Lean on the new, bigger facts (21–35) but keep some small ones.
       const pool = rng.chance(0.6) ? facts(LATE_LIMIT, (a, b) => a * b > EARLY_LIMIT) : facts(EARLY_LIMIT);
       const f = rng.pick(pool);
-      return factTask(':5', ':', f.product, f.b);
+      return shareFact(':5')(f.product, f.b, rng);
     },
+    rebuild: (a, b) => shareFact(':5')(a, b, new Rng(0)),
   },
 ];
 

@@ -15,14 +15,14 @@ interface Props {
 const ISLANDS: { id: IslandId | 'tasks'; name: string; theme: string; sign: string; color: string; bg: string; ready: boolean }[] = [
   { id: 'add', name: 'Додавання', theme: 'ліс', sign: '+', color: '#2E9C5B', bg: '#DDF5E5', ready: true },
   { id: 'sub', name: 'Віднімання', theme: 'пустеля', sign: '−', color: '#C9822B', bg: '#FCEBD2', ready: true },
-  { id: 'mul', name: 'Множення', theme: 'цукерки', sign: '×', color: '#D6457E', bg: '#FDE2EE', ready: false },
-  { id: 'div', name: 'Ділення', theme: 'кристали', sign: ':', color: '#2F6FED', bg: '#DFEAFE', ready: false },
+  { id: 'mul', name: 'Множення', theme: 'цукерки', sign: '×', color: '#D6457E', bg: '#FDE2EE', ready: true },
+  { id: 'div', name: 'Ділення', theme: 'кристали', sign: ':', color: '#2F6FED', bg: '#DFEAFE', ready: true },
   { id: 'tasks', name: 'Задачі', theme: 'замок', sign: '♛', color: '#5B3FD6', bg: '#ECE7FF', ready: false },
 ];
 
 /**
- * Temporary map (the island map with paths comes in stage 5): every column level is open,
- * × and : arrive in stage 4.
+ * Temporary map (the island map with paths comes in stage 5): for the first try every level of
+ * the four islands is open; the unlock rules (Ділення after ×2 …) come with the real map.
  */
 export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }: Props) {
   const stars = profile.levelStars ?? {};
@@ -81,7 +81,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }
       <div className="map-bottom">
         <div className="map-pet">
           <Pet kind={profile.pet} size={110} label={profile.petName} />
-          <div className="bubble">Привіт, {profile.name}! Обери рівень на острові Додавання чи Віднімання.</div>
+          <div className="bubble">Привіт, {profile.name}! Обери острів і рівень.</div>
         </div>
         <div className="map-actions">
           <button type="button" className="map-home" onClick={onOpenPetHome}>

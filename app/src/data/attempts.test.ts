@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { columnReviewTasks, listAttempts, saveAttempt } from './attempts';
+import { reviewTasks, listAttempts, saveAttempt } from './attempts';
 import { resetDbForTests } from './db';
 import { addCoins, createProfile, recordLevelStars } from './profiles';
 import type { Attempt } from './types';
@@ -38,9 +38,21 @@ describe('attempts', () => {
     await saveAttempt({ ...base, taskKey: '36+48', a: 36, b: 48, value: 74, at: '2026-11-18T08:00:00.000Z' });
     await saveAttempt({ ...base, taskKey: '36+48', a: 36, b: 48, value: 84, correct: true, error: null, at: '2026-11-19T12:00:00.000Z' });
     await saveAttempt({ ...base, level: '−2', taskKey: '52−17', op: '−', a: 52, b: 17, value: 45 }); // other island
-    const review = await columnReviewTasks('p1', ['+1', '+2', '+3'], now);
+    const review = await reviewTasks('p1', ['+1', '+2', '+3'], now);
     expect(review.map((t) => t.key)).toEqual(['47+38']);
     expect(review[0].column!.regroup).toEqual([0]);
+  });
+
+  it('rebuilds × and : tasks for review with their pictures', async () => {
+    const now = new Date('2026-11-20T09:00:00.000Z');
+    await saveAttempt({ ...base, level: ':3', taskKey: '24:6', op: ':', a: 24, b: 6, value: 24, error: 'reversed-division' });
+    await saveAttempt({ ...base, level: '×1', taskKey: '4×3', op: '×', a: 4, b: 3, value: 7, error: 'wrong-operation', at: '2026-11-18T08:00:00.000Z' });
+    const review = await reviewTasks('p1', [':3', '×1'], now);
+    expect(review.map((t) => [t.level, t.kind, t.key])).toEqual([
+      [':3', 'div-compose', '24:6'],
+      ['×1', 'repeated-add', '4×3'],
+    ]);
+    expect(review[0].picture).toEqual({ groups: 6, size: 4, mode: 'share' });
   });
 });
 

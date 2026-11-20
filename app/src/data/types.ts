@@ -35,7 +35,10 @@ export interface Attempt {
   op: '+' | '−' | '×' | ':';
   a: number;
   b: number;
+  /** The answer of the first wrong blank (or the last blank when right). */
   value: number;
+  /** Every blank as typed, for tasks with several boxes (×1, ×2, :3, :4). */
+  values?: (number | null)[];
   correct: boolean;
   /** Typical mistake (ErrorKind) or null when correct. */
   error: string | null;

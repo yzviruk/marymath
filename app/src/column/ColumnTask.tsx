@@ -28,6 +28,8 @@ export type Outcome = 'first' | 'second' | 'explained';
 
 export interface CheckRecord {
   value: number;
+  /** Every box of a task with several (× and : tasks). */
+  values?: number[];
   correct: boolean;
   error: ErrorKind | null;
   tryNo: number;
