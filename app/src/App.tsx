@@ -6,7 +6,7 @@ import { useRouter } from './router';
 import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
 import { StubScreen } from './screens/StubScreen';
-import { TaskDemo } from './screens/TaskDemo';
+import { LevelRun } from './screens/LevelRun';
 import { WhoPlays } from './screens/WhoPlays';
 import { Stage } from './Stage';
 
@@ -48,13 +48,22 @@ export function App() {
           <MapScreen
             profile={profile!}
             onSwitchChild={() => reset({ name: 'who' })}
-            onOpenTask={() => go({ name: 'task', profileId: profile!.id })}
+            onOpenLevel={(levelId) => go({ name: 'level', profileId: profile!.id, levelId })}
             onOpenPetHome={() => go({ name: 'petHome', profileId: profile!.id })}
           />
         );
         break;
-      case 'task':
-        screen = <TaskDemo profile={profile!} onBack={back} />;
+      case 'level':
+        screen = (
+          <LevelRun
+            key={route.levelId}
+            profile={profile!}
+            levelId={route.levelId}
+            onExit={back}
+            onNextLevel={(levelId) => reset({ name: 'level', profileId: profile!.id, levelId })}
+            onProfileChanged={reload}
+          />
+        );
         break;
       case 'petHome':
         screen = (

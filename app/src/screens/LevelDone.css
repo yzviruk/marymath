@@ -1,0 +1,108 @@
+.ld {
+  align-items: center;
+  justify-content: center;
+}
+.ld-card {
+  width: 980px;
+  border-radius: 40px;
+  padding: 36px 48px;
+  display: flex;
+  gap: 40px;
+  box-shadow: 0 8px 0 var(--card-shadow);
+}
+.ld-pet {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.ld-pet-circle {
+  width: 280px;
+  height: 280px;
+  border-radius: 140px;
+  background: #fff1de;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ld-pet .bubble {
+  border-radius: 22px;
+  text-align: center;
+}
+.ld-info {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ld-level {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.ld-info h1 {
+  margin: 0;
+  font-size: 46px;
+  line-height: 52px;
+  font-weight: 900;
+}
+.ld-stars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ld-score {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+}
+.ld-score b {
+  font-size: 26px;
+  font-weight: 900;
+}
+.ld-score span {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.ld-coins {
+  border-radius: 24px;
+  background: #fff6e3;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ld-coins b {
+  font-size: 30px;
+  font-weight: 900;
+}
+.ld-coins span {
+  font-size: 16px;
+  font-weight: 800;
+  color: #6b4a00;
+}
+.ld-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+}
+.ld-row {
+  display: flex;
+  gap: 14px;
+}
+.ld-secondary {
+  flex: 1 1 0;
+  height: 64px;
+  border-radius: 32px;
+  border: 3px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  font-size: 22px;
+  font-weight: 900;
+}

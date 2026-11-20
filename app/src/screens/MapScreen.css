@@ -1,5 +1,5 @@
 .map {
-  gap: 28px;
+  gap: 24px;
 }
 .map-who {
   padding-left: 8px;
@@ -15,38 +15,82 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: 1.35fr 1.35fr 1fr 1fr 1fr;
+  gap: 16px;
 }
 .map-islands li {
-  height: 260px;
-  border-radius: 40px 40px 60px 60px;
+  min-height: 300px;
+  border-radius: 40px 40px 56px 56px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  gap: 14px;
   box-shadow: 0 6px 0 rgba(30, 36, 64, 0.1);
 }
+.map-islands li:not(.ready) {
+  justify-content: center;
+  opacity: 0.75;
+}
+.map-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
 .map-sign {
-  width: 96px;
-  height: 96px;
-  border-radius: 48px;
+  width: 80px;
+  height: 80px;
+  border-radius: 40px;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 56px;
+  font-size: 48px;
   font-weight: 900;
 }
 .map-name {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 900;
 }
 .map-theme {
   font-size: 17px;
   font-weight: 800;
   color: var(--muted);
+}
+.map-levels {
+  display: grid;
+  grid-template-columns: repeat(4, 64px);
+  gap: 10px;
+}
+.map-level {
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 4px 0 rgba(30, 36, 64, 0.12);
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  gap: 2px;
+}
+.map-level.boss {
+  font-size: 26px;
+}
+.map-level:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+.map-level-stars {
+  font-size: 11px;
+  color: #ffb400;
+  height: 11px;
+  letter-spacing: -1px;
 }
 .map-bottom {
   margin-top: auto;
@@ -59,7 +103,7 @@
   display: flex;
   align-items: flex-end;
   gap: 12px;
-  max-width: 640px;
+  max-width: 720px;
 }
 .map-actions {
   display: flex;

@@ -65,6 +65,13 @@ export function divisionPath(total: number, size: number): number[] {
   return multiplicationPath(size, total / size).reverse();
 }
 
+/** 13 − 6 → [13, 10, 7]: back to the ten, then the rest. */
+export function bridgeBackPath(a: number, b: number): number[] {
+  const toTen = a % 10;
+  if (a <= 10 || toTen === 0 || b <= toTen) return [a, a - b];
+  return [a, a - toTen, a - b];
+}
+
 /** 7 + 8 → [7, 10, 15]: to the next ten, then the rest. */
 export function bridgeTenPath(a: number, b: number): number[] {
   const toTen = (10 - (a % 10)) % 10;

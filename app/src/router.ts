@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 export type Route =
   | { name: 'who' }
   | { name: 'map'; profileId: string }
-  | { name: 'task'; profileId: string }
+  | { name: 'level'; profileId: string; levelId: string }
   | { name: 'petHome'; profileId: string }
   | { name: 'parent' }
   | { name: 'levels' };

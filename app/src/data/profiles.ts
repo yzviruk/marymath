@@ -68,6 +68,32 @@ export async function updateProfile(
   return next;
 }
 
+export async function addCoins(id: string, coins: number): Promise<Profile> {
+  const db = await getDb();
+  const tx = db.transaction('profiles', 'readwrite');
+  const p = await tx.store.get(id);
+  if (!p) throw new ProfileError('Профіль не знайдено');
+  p.coins += coins;
+  await tx.store.put(p);
+  await tx.done;
+  return p;
+}
+
+/** Keeps the best stars of a level and recomputes the total. */
+export async function recordLevelStars(id: string, level: string, stars: number): Promise<Profile> {
+  const db = await getDb();
+  const tx = db.transaction('profiles', 'readwrite');
+  const p = await tx.store.get(id);
+  if (!p) throw new ProfileError('Профіль не знайдено');
+  const levelStars = { ...(p.levelStars ?? {}) };
+  levelStars[level] = Math.max(levelStars[level] ?? 0, stars);
+  p.levelStars = levelStars;
+  p.stars = Object.values(levelStars).reduce((s, n) => s + n, 0);
+  await tx.store.put(p);
+  await tx.done;
+  return p;
+}
+
 export async function deleteProfile(id: string): Promise<void> {
   await (await getDb()).delete('profiles', id);
 }

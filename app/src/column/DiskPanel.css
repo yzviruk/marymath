@@ -1,0 +1,144 @@
+.dp {
+  width: 380px;
+  flex-shrink: 0;
+  border-radius: 28px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 6px 0 var(--soft-shadow);
+}
+.dp-title {
+  font-size: 20px;
+  font-weight: 900;
+}
+.dp-cols {
+  display: grid;
+  gap: 8px;
+  flex-grow: 1;
+  min-height: 0;
+}
+.dp-col {
+  border-radius: 18px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  border: 3px solid transparent;
+  transition: border-color 0.2s;
+}
+.dp-col.p0 {
+  background: #fff3e6;
+}
+.dp-col.p1 {
+  background: #eaf7f0;
+}
+.dp-col.p2 {
+  background: #eef4ff;
+}
+.dp-col.p3 {
+  background: #f1edff;
+}
+.dp-col.ready {
+  border-color: #b9a8ff;
+}
+.dp-col.pulse {
+  animation: dp-pulse 0.5s ease-out;
+}
+.dp-name {
+  font-size: 15px;
+  font-weight: 900;
+}
+.dp-col.p0 .dp-name {
+  color: #b4520a;
+}
+.dp-col.p1 .dp-name {
+  color: var(--tens);
+}
+.dp-col.p2 .dp-name {
+  color: var(--hundreds);
+}
+.dp-col.p3 .dp-name {
+  color: var(--accent);
+}
+.dp-disks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  gap: 5px;
+}
+.dp-disk {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  animation: dp-in 0.35s ease-out both;
+}
+.dp-disk.p0 {
+  background: var(--ones);
+}
+.dp-disk.p1 {
+  width: 34px;
+  height: 34px;
+  background: var(--tens);
+}
+.dp-disk.p2 {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  background: var(--hundreds);
+}
+.dp-disk.p3 {
+  width: 44px;
+  height: 44px;
+  font-size: 12px;
+  background: var(--accent);
+}
+.dp-disk.grab {
+  cursor: grab;
+}
+.dp-disk.moving {
+  position: relative;
+  z-index: 5;
+  cursor: grabbing;
+  box-shadow: 0 6px 12px rgba(30, 36, 64, 0.3);
+  animation: none;
+}
+.dp-note {
+  border-radius: 16px;
+  background: var(--accent-soft);
+  padding: 10px 14px;
+  min-height: 46px;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+@keyframes dp-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes dp-pulse {
+  50% {
+    transform: scale(1.04);
+    border-color: var(--accent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dp-disk,
+  .dp-col.pulse {
+    animation: none;
+  }
+}

@@ -1,44 +1,148 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-test('create a profile, keep it after reload, play the demo task', async ({ page }) => {
+async function createProfile(page: Page, name = 'Марія') {
   await page.goto('./');
-
-  // First start: the form opens by itself.
-  await expect(page.getByRole('heading', { name: 'Хто сьогодні грає?' })).toBeVisible();
-  await page.getByLabel('Імʼя').fill('Марія');
+  await page.getByLabel('Імʼя').fill(name);
   await page.getByRole('button', { name: 'Котик' }).click();
   await page.getByRole('button', { name: 'Створити профіль' }).click();
-
-  // Straight to the map.
   await expect(page.getByText('Карта островів')).toBeVisible();
-  await expect(page.getByText('Привіт, Марія!')).toBeVisible();
+}
 
-  // Data survives a reload (IndexedDB).
+async function openLevel(page: Page, id: string) {
+  await page.getByRole('button', { name: new RegExp(`^Рівень ${id.replace('+', '\\+')}(,|$)`) }).click();
+  await expect(page.getByLabel(/^Приклад у стовпчик/)).toBeVisible();
+}
+
+/** Reads the current column task from the board. */
+async function currentTask(page: Page) {
+  const label = (await page.getByLabel(/^Приклад у стовпчик/).getAttribute('aria-label'))!;
+  const [, a, op, b] = label.match(/(\d+) ([+−]) (\d+)/)!;
+  const x = Number(a);
+  const y = Number(b);
+  return { a: x, b: y, op, result: op === '+' ? x + y : x - y };
+}
+
+/** Types a number right to left on the keypad. */
+async function typeNumber(page: Page, n: number) {
+  for (const d of String(n).split('').reverse()) {
+    await page.getByRole('button', { name: d, exact: true }).click();
+  }
+}
+
+async function solveCurrent(page: Page) {
+  const t = await currentTask(page);
+  await typeNumber(page, t.result);
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Правильно!' })).toBeVisible();
+  await page.getByRole('button', { name: 'Далі' }).click();
+}
+
+test('profile survives a reload', async ({ page }) => {
+  await createProfile(page);
+  await expect(page.getByText('Привіт, Марія!')).toBeVisible();
   await page.reload();
   await expect(page.getByText('Привіт, Марія!')).toBeVisible();
   await page.getByRole('button', { name: 'Змінити гравця' }).click();
   await expect(page.getByRole('button', { name: /Марія/ })).toBeVisible();
+});
 
-  // Demo task: keypad + number line.
-  await page.getByRole('button', { name: /Марія/ }).click();
-  await page.getByRole('button', { name: 'Пробне завдання' }).click();
+test('column: carry written on top, coach names places only', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '+3');
+  const t = await currentTask(page);
   await expect(page.getByRole('img', { name: 'Числова шкала від 0 до 20' })).toBeVisible();
-  await page.getByRole('button', { name: '1', exact: true }).click();
-  await page.getByRole('button', { name: '3', exact: true }).click();
-  await page.getByRole('button', { name: 'Перевірити' }).click();
-  await expect(page.getByRole('img', { name: /стрибки: 0 → 3 → 6 → 9 → 12/ })).toBeVisible();
-  await expect(page.getByLabel('Твоя відповідь')).toHaveText('13');
-  // After a wrong answer the first new digit replaces the old answer.
-  await page.getByRole('button', { name: '1', exact: true }).click();
-  await expect(page.getByLabel('Твоя відповідь')).toHaveText('1');
-  await page.keyboard.press('2');
-  await expect(page.getByLabel('Твоя відповідь')).toHaveText('12');
-  await page.getByRole('button', { name: 'Перевірити' }).click();
-  await expect(page.getByText('Так! 3 × 4 = 12')).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: `Одиниці: ${t.a % 10} + ${t.b % 10}.` })).toBeVisible();
 
-  // Android back gesture returns to the map.
-  await page.goBack();
-  await expect(page.getByText('Карта островів')).toBeVisible();
+  await page.getByRole('button', { name: String(t.result % 10), exact: true }).click();
+  await page.getByRole('button', { name: 'Перенесення над десятки' }).click();
+  await page.getByRole('button', { name: '1', exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'і ще 1 зверху' })).toBeVisible();
+  await page.getByRole('button', { name: String(Math.floor(t.result / 10)), exact: true }).click();
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('status').filter({ hasText: `Правильно! ${t.a} + ${t.b} = ${t.result}.` })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Не забувай' })).toHaveCount(0);
+});
+
+test('column: a mistake goes hint → explanation → similar task', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '+3');
+  const t = await currentTask(page);
+  const forgotCarry = t.result - 10;
+
+  await typeNumber(page, forgotCarry);
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Майже! Перевір розряд десятків.' })).toBeVisible();
+
+  // The first new digit replaces the wrong one; still wrong → explanation.
+  await page.getByRole('button', { name: String(Math.floor(forgotCarry / 10)), exact: true }).click();
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByTestId('error-kind')).toHaveText('forgot-carry');
+  await expect(page.getByRole('status').filter({ hasText: 'його пишемо зверху' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /стрибки:/ })).toBeVisible();
+
+  // A wrong digit in the explanation just repeats the step.
+  await page.getByRole('button', { name: String((t.result % 10 + 1) % 10), exact: true }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Ще раз:' })).toBeVisible();
+
+  await typeNumber(page, t.result);
+  await expect(page.getByRole('status').filter({ hasText: 'Тепер схожий приклад' })).toBeVisible();
+  await page.getByRole('button', { name: 'Далі' }).click();
+
+  const similar = await currentTask(page);
+  expect(similar.a + similar.b).not.toBe(0);
+  expect(`${similar.a}+${similar.b}`).not.toBe(`${t.a}+${t.b}`);
+  expect((similar.a % 10) + (similar.b % 10)).toBeGreaterThanOrEqual(10); // still a carry from ones
+  // The extra task does not move the progress: first dot is orange, second is current.
+  await expect(page.getByLabel('Приклад 2 з 10')).toBeVisible();
+});
+
+test('column: borrowing through zero with marks', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '−5');
+  const t = await currentTask(page);
+  const top = String(t.a);
+  // Cross every zero and the digit that lends, as in a notebook.
+  for (const p of [...top].map((_, i) => top.length - 1 - i).filter((p) => p > 0)) {
+    const btn = page.getByRole('button', { name: new RegExp(`^${top[top.length - 1 - p]} — ${['', 'десятки', 'сотні', 'тисячі'][p]}`) });
+    if (await btn.count()) await btn.click();
+  }
+  await typeNumber(page, t.result);
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Правильно!' })).toBeVisible();
+});
+
+test('column: dragging 10 ones onto the tens exchanges them', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '+3');
+  const t = await currentTask(page);
+  const ones = (t.a % 10) + (t.b % 10);
+  const tens = Math.floor(t.a / 10) + Math.floor(t.b / 10);
+  await expect(page.getByTestId('disk-0')).toHaveCount(ones);
+
+  const disk = page.getByTestId('disk-0').first();
+  const target = page.locator('[data-disk-place="1"]');
+  const from = (await disk.boundingBox())!;
+  const to = (await target.boundingBox())!;
+  await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 8 });
+  await page.mouse.up();
+
+  await expect(page.getByTestId('disk-0')).toHaveCount(ones - 10);
+  await expect(page.getByTestId('disk-1')).toHaveCount(tens + 1);
+});
+
+test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '+1');
+  for (let i = 0; i < 10; i++) await solveCurrent(page);
+  await expect(page.getByRole('heading', { name: 'Рівень пройдено!' })).toBeVisible();
+  await expect(page.getByText('10 з 10')).toBeVisible();
+  await expect(page.getByRole('img', { name: '3 зірки з 3' })).toBeVisible();
+  await expect(page.getByText('+35')).toBeVisible();
+  await page.getByRole('button', { name: 'Карта' }).click();
+  await expect(page.getByRole('button', { name: 'Рівень +1, зірок: 3' })).toBeVisible();
+  await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
 });
 
 test('PWA manifest is served', async ({ request }) => {

@@ -1,0 +1,22 @@
+.lr-dots {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.lr-dots span {
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background: #c9d6ee;
+}
+.lr-dots .ok {
+  background: var(--success);
+}
+.lr-dots .learn {
+  background: var(--coin);
+}
+.lr-dots .now {
+  width: 36px;
+  background: var(--accent);
+}

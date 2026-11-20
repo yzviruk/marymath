@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bridgeTenPath, buildArcs, divisionPath, multiplicationPath, xOf } from './lineGeometry';
+import { bridgeBackPath, bridgeTenPath, buildArcs, divisionPath, multiplicationPath, xOf } from './lineGeometry';
 
 describe('number line geometry', () => {
   it('places 0 and 20 inside the 1232px line', () => {
@@ -30,6 +30,13 @@ describe('number line geometry', () => {
     expect(bridgeTenPath(6, 3)).toEqual([6, 9]);
     expect(bridgeTenPath(10, 5)).toEqual([10, 15]);
     expect(buildArcs(bridgeTenPath(7, 8)).map((a) => a.label)).toEqual(['+3', '+5']);
+  });
+
+  it('bridges back through ten', () => {
+    expect(bridgeBackPath(13, 6)).toEqual([13, 10, 7]);
+    expect(bridgeBackPath(12, 2)).toEqual([12, 10]);
+    expect(bridgeBackPath(8, 3)).toEqual([8, 5]);
+    expect(buildArcs(bridgeBackPath(13, 6)).map((a) => a.label)).toEqual(['−3', '−3']);
   });
 
   it('drops points off the line and zero-length jumps', () => {
