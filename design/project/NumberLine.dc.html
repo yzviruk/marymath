@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Числова шкала 0–20</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div role="img" aria-label="{{aria}}" style="position: relative; width: 1232px; height: 120px; box-sizing: border-box; border-radius: 24px; background: #FFFFFF; box-shadow: 0 4px 0 #D3E0F5; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; overflow: visible">
+  <div style="position: absolute; left: 24px; top: 74px; width: 1184px; height: 4px; border-radius: 2px; background: #C9D6EE"></div>
+  <sc-for list="{{arcs}}" as="a" hint-placeholder-count="0">
+    <div style="position: absolute; left: {{a.left}}px; top: 20px; width: {{a.w}}px; height: 56px">
+      <svg width="{{a.w}}" height="56" viewBox="{{a.box}}" aria-hidden="true" style="position: absolute; left: 0; top: 0; overflow: visible">
+        <path d="{{a.d}}" fill="none" stroke="#7C63F0" stroke-width="3.5" stroke-linecap="round"></path>
+        <polygon points="{{a.head}}" fill="#7C63F0"></polygon>
+      </svg>
+      <div style="position: absolute; left: 0; top: -14px; width: {{a.w}}px; text-align: center; font-size: 18px; line-height: 22px; font-weight: 900; color: #5B3FD6">{{a.label}}</div>
+    </div>
+  </sc-for>
+  <sc-for list="{{ticks}}" as="t" hint-placeholder-count="21">
+    <div style="position: absolute; left: {{t.tickLeft}}px; top: {{t.tickTop}}px; width: 3px; height: {{t.tickH}}px; border-radius: 2px; background: {{t.tickColor}}"></div>
+    <div style="position: absolute; left: {{t.labelLeft}}px; top: 88px; width: 44px; text-align: center; font-size: {{t.fs}}px; line-height: 26px; font-weight: {{t.fw}}; color: {{t.color}}">{{t.n}}</div>
+  </sc-for>
+  <sc-for list="{{dots}}" as="d" hint-placeholder-count="0">
+    <div style="position: absolute; left: {{d.left}}px; top: 68px; width: 16px; height: 16px; border-radius: 8px; background: #5B3FD6; box-shadow: 0 0 0 4px #E6E0FF"></div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"path":{"editor":"text","default":"0,3,6,9,12"},"labels":{"editor":"enum","options":["delta","count","none"],"default":"delta"},"$preview":{"width":1232,"height":120}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const raw = this.props.path ?? '0,3,6,9,12';
+    const mode = this.props.labels ?? 'delta';
+    const X = (n) => 36 + 58 * n;
+    const pts = String(raw).split(',').map((s) => Number(s.trim())).filter((n) => s_ok(n));
+    function s_ok(n) { return Number.isFinite(n) && n >= 0 && n <= 20; }
+    const landing = {};
+    pts.forEach((p) => { landing[p] = true; });
+    const ticks = [];
+    for (let n = 0; n <= 20; n++) {
+      const major = n % 5 === 0;
+      const on = !!landing[n];
+      ticks.push({
+        n,
+        tickLeft: X(n) - 1.5,
+        tickTop: major ? 64 : 69,
+        tickH: major ? 24 : 14,
+        tickColor: major ? '#8C9BC0' : '#B7C5E3',
+        labelLeft: X(n) - 22,
+        fs: n === 0 ? 18 : 22,
+        fw: on ? 900 : 800,
+        color: on ? '#5B3FD6' : (n === 0 ? '#6B7591' : '#1E2440')
+      });
+    }
+    const arcs = [];
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const a = pts[i], b = pts[i + 1];
+      if (a === b) continue;
+      const x1 = X(Math.min(a, b)), x2 = X(Math.max(a, b));
+      const w = x2 - x1;
+      const fwd = b > a;
+      const d = 'M 2 54 Q ' + (w / 2) + ' -22 ' + (w - 2) + ' 54';
+      const head = fwd
+        ? (w - 12) + ',44 ' + (w - 1) + ',56 ' + (w - 2) + ',40'
+        : '12,44 1,56 2,40';
+      const diff = Math.abs(b - a);
+      const label = mode === 'none' ? '' : (mode === 'count' ? String(i + 1) : (fwd ? '+' : '−') + diff);
+      arcs.push({ left: x1, w, box: '0 0 ' + w + ' 56', d, head, label });
+    }
+    const dots = pts.length > 1 ? pts.slice(1).map((p) => ({ left: X(p) - 8 })) : [];
+    const aria = pts.length > 1 ? 'Числова шкала від 0 до 20, стрибки: ' + pts.join(' → ') : 'Числова шкала від 0 до 20';
+    return { ticks, arcs, dots, aria };
+  }
+}
+</script>
+</body>
+</html>

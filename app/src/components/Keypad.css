@@ -1,0 +1,42 @@
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.key {
+  height: 80px;
+  border: 0;
+  border-radius: 22px;
+  background: #f2f6fd;
+  box-shadow: 0 5px 0 #d3def2;
+  font: inherit;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.06s, box-shadow 0.06s;
+}
+.key:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #d3def2;
+}
+.key:disabled {
+  opacity: 0.5;
+}
+.key.erase {
+  background: #fff0e6;
+  box-shadow: 0 5px 0 #f5d2b8;
+}
+.key svg {
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

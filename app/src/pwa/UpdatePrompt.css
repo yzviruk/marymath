@@ -1,0 +1,36 @@
+.update {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 10px 22px;
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 6px 0 var(--card-shadow);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.update-go {
+  height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+}
+.update-later {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 24px;
+  background: #f2f6fd;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 900;
+}

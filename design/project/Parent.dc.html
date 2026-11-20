@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Панель батьків</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; padding: 24px 32px; background: #F4F6FA; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <div style="height: 60px; display: flex; align-items: center; gap: 16px">
+    <h1 style="margin: 0; font-size: 30px; font-weight: 900">Панель батьків</h1>
+    <div style="display: flex; gap: 8px; margin-left: 12px" role="tablist" aria-label="Профілі дітей">
+      <button type="button" role="tab" aria-selected="true" style="height: 48px; padding: 0 18px 0 6px; border-radius: 24px; border: 0; background: #1E2440; color: #FFFFFF; font-family: inherit; font-size: 18px; font-weight: 900; display: flex; align-items: center; gap: 8px; cursor: pointer">
+        <span style="width: 38px; height: 38px; border-radius: 19px; background: #FFF1DE; display: flex; align-items: center; justify-content: center"><dc-import name="Pet" kind="dog" size="32" hint-size="32px,32px"></dc-import></span>
+        Марія
+      </button>
+      <button type="button" style="height: 48px; padding: 0 18px; border-radius: 24px; border: 2px dashed #A9B4CC; background: transparent; color: #4F5A78; font-family: inherit; font-size: 17px; font-weight: 800; cursor: pointer">+ Додати профіль</button>
+    </div>
+    <div style="flex-grow: 1"></div>
+    <span style="height: 32px; padding: 0 12px; border-radius: 16px; background: #FFF3D6; color: #6B4A00; font-size: 14px; font-weight: 800; display: flex; align-items: center">Демо-дані для макета</span>
+    <a href="Main.dc.html" style="height: 48px; padding: 0 20px; border-radius: 24px; background: #FFFFFF; color: #4F5A78; font-size: 17px; font-weight: 900; display: flex; align-items: center; text-decoration: none; border: 2px solid #E1E6F0">Вийти</a>
+  </div>
+
+  <div style="display: flex; gap: 16px; flex-grow: 1; min-height: 0">
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+      <div style="border-radius: 24px; background: #FFFFFF; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; border: 2px solid #E8ECF4">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 20px; font-weight: 900">Точність за темами</span>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">останні 7 днів</span>
+        </div>
+        <sc-for list="{{topics}}" as="t" hint-placeholder-count="4">
+          <div style="display: grid; grid-template-columns: 130px 1fr 56px; align-items: center; gap: 12px">
+            <span style="font-size: 17px; font-weight: 800">{{t.name}}</span>
+            <div style="height: 16px; border-radius: 8px; background: #EEF2F8; overflow: hidden">
+              <div style="width: {{t.pct}}%; height: 16px; border-radius: 8px; background: {{t.color}}"></div>
+            </div>
+            <span style="font-size: 17px; font-weight: 900; text-align: right">{{t.pct}}%</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="flex-grow: 1; border-radius: 24px; background: #FFFFFF; padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; border: 2px solid #E8ECF4">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 20px; font-weight: 900">Найчастіші помилки</span>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">останні 30 днів</span>
+        </div>
+        <sc-for list="{{errors}}" as="e" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 2px solid #F0F3F8">
+            <span style="width: 44px; height: 36px; flex-shrink: 0; border-radius: 12px; background: #FFF0E6; color: #9A4508; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center">{{e.count}}</span>
+            <div style="display: flex; flex-direction: column; gap: 1px; min-width: 0">
+              <span style="font-size: 17px; font-weight: 900">{{e.name}}</span>
+              <span style="font-size: 15px; font-weight: 700; color: #4F5A78">{{e.example}}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="border-radius: 24px; background: #FFFFFF; padding: 20px 24px; display: flex; flex-direction: column; gap: 12px; border: 2px solid #E8ECF4">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 20px; font-weight: 900">Таблиця фактів × і :</span>
+          <div style="display: flex; gap: 12px; font-size: 13px; font-weight: 800; color: #4F5A78">
+            <span style="display: flex; align-items: center; gap: 4px"><span style="width: 12px; height: 12px; border-radius: 4px; background: #138A55"></span>знає</span>
+            <span style="display: flex; align-items: center; gap: 4px"><span style="width: 12px; height: 12px; border-radius: 4px; background: #FFC94D"></span>вчить</span>
+            <span style="display: flex; align-items: center; gap: 4px"><span style="width: 12px; height: 12px; border-radius: 4px; background: #E8770E"></span>помиляється</span>
+            <span style="display: flex; align-items: center; gap: 4px"><span style="width: 12px; height: 12px; border-radius: 4px; background: #EEF2F8; border: 1px solid #C9D3E6; box-sizing: border-box"></span>ще не було</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <sc-for list="{{factRows}}" as="r" hint-placeholder-count="7">
+            <div style="display: flex; gap: 4px; align-items: center">
+              <span style="width: 44px; font-size: 15px; font-weight: 900; color: #4F5A78">× {{r.f}}</span>
+              <sc-for list="{{r.cells}}" as="c" hint-placeholder-count="10">
+                <span style="width: 44px; height: 30px; border-radius: 8px; background: {{c.bg}}; color: {{c.fg}}; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center">{{c.text}}</span>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size: 14px; font-weight: 700; color: #4F5A78">Клітинка — добуток; факт множення і обидва ділення з нього рахуються разом. Порожні — понад 35, поза програмою.</span>
+      </div>
+
+      <div style="flex-grow: 1; border-radius: 24px; background: #FFFFFF; padding: 18px 24px; display: flex; flex-direction: column; gap: 8px; border: 2px solid #E8ECF4">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <span style="font-size: 20px; font-weight: 900">Час занять, хв</span>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">ліміт 20 хв на день</span>
+        </div>
+        <div style="position: relative; flex-grow: 1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; align-items: end">
+          <div style="position: absolute; left: 0; right: 0; bottom: 122px; border-top: 2px dashed #A9B4CC"></div>
+          <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+              <span style="font-size: 13px; font-weight: 900; color: #4F5A78">{{d.min}}</span>
+              <div style="width: 100%; height: {{d.h}}px; border-radius: 8px 8px 4px 4px; background: #5B3FD6"></div>
+              <span style="font-size: 13px; font-weight: 800; color: #4F5A78">{{d.day}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 72px; border-radius: 24px; background: #FFFFFF; border: 2px solid #E8ECF4; padding: 0 20px; display: flex; align-items: center; gap: 20px">
+    <span style="font-size: 17px; font-weight: 900">Ліміт на день</span>
+    <div style="display: flex; align-items: center; gap: 8px">
+      <button type="button" aria-label="Менше хвилин" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F2F6FD; font-family: inherit; font-size: 24px; font-weight: 900; color: #1E2440; cursor: pointer">−</button>
+      <span style="min-width: 64px; text-align: center; font-size: 20px; font-weight: 900">20 хв</span>
+      <button type="button" aria-label="Більше хвилин" style="width: 44px; height: 44px; border-radius: 22px; border: 0; background: #F2F6FD; font-family: inherit; font-size: 24px; font-weight: 900; color: #1E2440; cursor: pointer">+</button>
+    </div>
+    <label style="display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800"><input type="checkbox" checked style="width: 24px; height: 24px; accent-color: #5B3FD6">Звуки</label>
+    <label style="display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800"><input type="checkbox" checked style="width: 24px; height: 24px; accent-color: #5B3FD6">Озвучення умов</label>
+    <div style="flex-grow: 1"></div>
+    <button type="button" style="height: 48px; padding: 0 18px; border-radius: 24px; border: 2px solid #E1E6F0; background: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 900; color: #1E2440; cursor: pointer">Зберегти копію</button>
+    <button type="button" style="height: 48px; padding: 0 18px; border-radius: 24px; border: 2px solid #E1E6F0; background: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 900; color: #1E2440; cursor: pointer">Відновити з файлу</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const topics = [
+      { name: 'Додавання', pct: 92, color: '#2F6FED' },
+      { name: 'Віднімання', pct: 78, color: '#2F6FED' },
+      { name: 'Множення', pct: 85, color: '#2F6FED' },
+      { name: 'Ділення', pct: 64, color: '#E8770E' }
+    ];
+    const errors = [
+      { count: 6, name: 'Переплутаний порядок у діленні', example: 'напр. 4 : 6 = 24 замість 24 : 6 = 4' },
+      { count: 4, name: 'Позичання через нуль', example: 'напр. 400 − 127 = 373' },
+      { count: 3, name: 'Забула перенесення', example: 'напр. 47 + 38 = 75' }
+    ];
+    const status = {
+      2: 'kkkkkkkkkk', 3: 'kkkklwkkkk', 4: 'kkklwlkk', 5: 'kkkkkkk',
+      6: 'kllwnnn', 7: 'klwnn', 10: 'kkk'
+    };
+    const style = {
+      k: { bg: '#138A55', fg: '#FFFFFF' },
+      l: { bg: '#FFC94D', fg: '#3A2A00' },
+      w: { bg: '#E8770E', fg: '#FFFFFF' },
+      n: { bg: '#EEF2F8', fg: '#6B7591' }
+    };
+    const factRows = [2, 3, 4, 5, 6, 7, 10].map((f) => {
+      const s = status[f];
+      const cells = [];
+      for (let c = 1; c <= 10; c++) {
+        const p = f * c;
+        if (p > 35) { cells.push({ text: '', bg: 'transparent', fg: 'transparent' }); continue; }
+        const st = style[s.charAt(c - 1) || 'n'];
+        cells.push({ text: String(p), bg: st.bg, fg: st.fg });
+      }
+      return { f, cells };
+    });
+    const mins = [[18, 'Пн'], [22, 'Вт'], [15, 'Ср'], [20, 'Чт'], [12, 'Пт'], [0, 'Сб'], [0, 'Нд']];
+    const days = mins.map((m) => ({ min: m[0] ? String(m[0]) : '—', day: m[1], h: Math.max(4, m[0] * 5) }));
+    return { topics, errors, factRows, days };
+  }
+}
+</script>
+</body>
+</html>

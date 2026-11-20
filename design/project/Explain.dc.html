@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Пояснення помилки</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; padding: 20px 24px; background: #EAF3FF; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <div style="height: 64px; display: flex; align-items: center; gap: 16px">
+    <a href="Map.dc.html" style="height: 52px; padding: 0 20px 0 14px; border-radius: 26px; background: #FFFFFF; display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 900; color: #4F5A78; text-decoration: none; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #4F5A78; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M15 5l-7 7 7 7"></path></svg>
+      Карта
+    </a>
+    <span style="font-size: 24px; font-weight: 900">Давай розберемося разом</span>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; color: #4F5A78">
+      <span>Крок 2 з 3</span>
+      <span style="width: 14px; height: 14px; border-radius: 7px; background: #1E9E63"></span>
+      <span style="width: 36px; height: 14px; border-radius: 7px; background: #5B3FD6"></span>
+      <span style="width: 14px; height: 14px; border-radius: 7px; background: #C9D6EE"></span>
+    </div>
+  </div>
+
+  <dc-import name="NumberLine" path="-" labels="none" hint-size="1232px,120px"></dc-import>
+
+  <div style="flex-grow: 1; min-height: 0; box-sizing: border-box; border-radius: 28px; background: #FFFFFF; padding: 24px 32px; display: flex; gap: 32px; box-shadow: 0 6px 0 #D3E0F5">
+
+    <div style="width: 560px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px">
+      <span style="font-size: 22px; font-weight: 900">Що на малюнку?</span>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px">
+        <sc-for list="{{boxes}}" as="b" hint-placeholder-count="6">
+          <div style="height: 76px; box-sizing: border-box; border-radius: 14px; border: 3px solid #E8770E; background: #FFF6EC; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); place-items: center; padding: 6px">
+            <sc-for list="{{b.gems}}" as="g" hint-placeholder-count="4">
+              <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12l4 5-10 12L2 9z" fill="#3FB6E8"></path><path d="M2 9h20M9 4l3 5 3-5" stroke="#1E86B5" stroke-width="1.4" fill="none"></path></svg>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <span style="font-size: 18px; font-weight: 800; color: #4F5A78">6 коробок, у кожній по 4 камінці</span>
+
+      <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px">
+        <div style="height: 52px; border-radius: 14px; background: #E6E0FF; border: 3px solid #5B3FD6; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 26px; font-weight: 900; color: #3E27A3">24 <span style="font-size: 17px; font-weight: 800">усього — ціле</span></div>
+        <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+          <sc-for list="{{boxes}}" as="b" hint-placeholder-count="6">
+            <div style="height: 48px; border-radius: 12px; background: #FFE9D4; border: 3px solid #E8770E; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #9A4508">4</div>
+          </sc-for>
+        </div>
+        <span style="font-size: 16px; font-weight: 800; color: #4F5A78; text-align: center">6 рівних частин по 4</span>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: center; gap: 14px; border-radius: 20px; background: #FFF6EC; padding: 12px 18px">
+        <span style="font-size: 17px; font-weight: 800; color: #4F5A78">Твоя відповідь</span>
+        <span style="font-size: 32px; font-weight: 900; color: #9A4508; letter-spacing: 2px">4 : 6 = 24</span>
+        <span style="font-size: 16px; font-weight: 800; color: #9A4508">числа помінялися місцями</span>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span style="font-size: 32px; line-height: 38px; font-weight: 900">Спочатку пишемо, <span style="color: #3E27A3; text-decoration: underline; text-decoration-thickness: 5px; text-underline-offset: 6px; text-decoration-color: #B9A8FF">скільки всього</span></span>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; gap: 12px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 112px; height: 92px; box-sizing: border-box; border-radius: 20px; background: #E6E0FF; border: 3px solid #5B3FD6; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 900; color: #3E27A3">24</div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">усього</span>
+        </div>
+        <span style="height: 92px; display: flex; align-items: center; font-size: 56px; font-weight: 900">:</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 112px; height: 92px; box-sizing: border-box; border-radius: 20px; background: #F2F6FD; border: 3px solid #8C9BC0; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 900">6</div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">скільки частин</span>
+        </div>
+        <span style="height: 92px; display: flex; align-items: center; font-size: 56px; font-weight: 900">=</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 112px; height: 92px; box-sizing: border-box; border-radius: 20px; background: #FFE9D4; border: 3px solid #E8770E; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 900; color: #9A4508">4</div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">в одній частині</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-end; gap: 12px">
+        <dc-import name="Pet" kind="dog" size="88" hint-size="88px,88px"></dc-import>
+        <div style="flex-grow: 1; border-radius: 22px 22px 22px 6px; background: #F1EDFF; padding: 14px 18px; font-size: 20px; line-height: 26px; font-weight: 800; color: #2A1F66">Нічого страшного! Ціле завжди йде першим — як довга смужка зверху.</div>
+      </div>
+
+      <div style="margin-top: auto; display: flex; gap: 14px; justify-content: flex-end">
+        <button type="button" style="height: 64px; padding: 0 28px; border-radius: 32px; border: 3px solid #E3EAF7; background: #FFFFFF; color: #4F5A78; font-family: inherit; font-size: 22px; font-weight: 900; cursor: pointer">Назад</button>
+        <a href="LevelDone.dc.html" style="height: 64px; padding: 0 36px; border-radius: 32px; background: #5B3FD6; color: #FFFFFF; font-size: 24px; font-weight: 900; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: 0 6px 0 #3E27A3">
+          Далі
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #FFFFFF; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M9 5l7 7-7 7"></path></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const gems = [1, 2, 3, 4].map((i) => ({ i }));
+    const boxes = Array.from({ length: 6 }, (_, i) => ({ i, gems }));
+    return { boxes };
+  }
+}
+</script>
+</body>
+</html>

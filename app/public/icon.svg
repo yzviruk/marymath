@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#5B3FD6"/>
+  <circle cx="256" cy="268" r="168" fill="#EAF3FF"/>
+  <text x="256" y="330" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-weight="900" font-size="190" fill="#5B3FD6">1+2</text>
+  <path d="M120 150 Q256 40 392 150" fill="none" stroke="#FFB400" stroke-width="22" stroke-linecap="round"/>
+  <polygon points="392,150 352,140 386,112" fill="#FFB400"/>
+</svg>

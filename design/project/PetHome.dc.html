@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Будиночок і магазин</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; padding: 20px 24px 24px; background: #EAF3FF; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <div style="height: 64px; display: flex; align-items: center; gap: 16px">
+    <a href="Map.dc.html" style="height: 52px; padding: 0 20px 0 14px; border-radius: 26px; background: #FFFFFF; display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 900; color: #4F5A78; text-decoration: none; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #4F5A78; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M15 5l-7 7 7 7"></path></svg>
+      Карта
+    </a>
+    <span style="font-size: 26px; font-weight: 900">Будиночок</span>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 18px; border-radius: 26px; background: #FFFFFF; font-size: 22px; font-weight: 900; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#F5A524"></circle><circle cx="12" cy="12" r="6.5" fill="none" stroke="#FFD66B" stroke-width="2"></circle></svg>
+      <span>128</span><span style="font-size: 16px; font-weight: 800; color: #4F5A78">монеток</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 24px; flex-grow: 1; min-height: 0">
+    <div style="position: relative; width: 740px; height: 676px; border-radius: 32px; overflow: hidden; background: #FFE9D6">
+      <div style="position: absolute; left: 0; top: 440px; width: 740px; height: 236px; background: #EBCB9F"></div>
+      <div style="position: absolute; left: 0; top: 432px; width: 740px; height: 12px; background: #D9AE7A"></div>
+      <div style="position: absolute; left: 56px; top: 64px; width: 180px; height: 150px; box-sizing: border-box; border-radius: 20px; border: 10px solid #FFFFFF; background: #BFE3FF; overflow: hidden">
+        <div style="position: absolute; left: 70px; top: 0; width: 10px; height: 150px; background: #FFFFFF"></div>
+        <div style="position: absolute; left: 18px; top: 26px; width: 40px; height: 40px; border-radius: 20px; background: #FFD45C"></div>
+      </div>
+      <div style="position: absolute; left: 270px; top: 40px; width: 200px; height: 52px; border-radius: 26px; background: #FFFFFF; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 0 #F0D2B4">
+        <span style="font-size: 26px; font-weight: 900">Персик</span>
+        <button type="button" aria-label="Перейменувати улюбленця" style="width: 36px; height: 36px; border-radius: 18px; border: 0; background: #F1EDFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #5B3FD6; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
+        </button>
+      </div>
+      <div style="position: absolute; left: 470px; top: 150px; width: 220px; border-radius: 22px 22px 22px 6px; background: #FFFFFF; padding: 12px 16px; font-size: 19px; line-height: 24px; font-weight: 800; color: #2A1F66">Дякую за м'ячик! Пограємо?</div>
+
+      <div style="position: absolute; left: 190px; top: 520px; width: 360px; height: 90px; border-radius: 50%; background: #8FC9F0"></div>
+      <div style="position: absolute; left: 230px; top: 528px; width: 280px; height: 66px; border-radius: 50%; border: 4px dashed #FFFFFF; box-sizing: border-box"></div>
+      <div style="position: absolute; left: 240px; top: 300px">
+        <dc-import name="Pet" kind="dog" size="260" hint-size="260px,260px"></dc-import>
+      </div>
+      <div style="position: absolute; left: 330px; top: 300px; width: 70px; height: 30px">
+        <svg width="70" height="34" viewBox="0 0 70 34" aria-hidden="true"><path d="M35 17 L8 4 L8 30 Z" fill="#FF6FA5"></path><path d="M35 17 L62 4 L62 30 Z" fill="#FF6FA5"></path><circle cx="35" cy="17" r="8" fill="#E04F88"></circle></svg>
+      </div>
+
+      <div style="position: absolute; left: 40px; top: 540px; width: 150px; height: 70px; border-radius: 35px; background: #B79BFF"></div>
+      <div style="position: absolute; left: 52px; top: 528px; width: 126px; height: 44px; border-radius: 22px; background: #E6E0FF"></div>
+      <div style="position: absolute; left: 590px; top: 556px; width: 64px; height: 64px">
+        <svg width="64" height="64" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FF8A3D"></circle><path d="M2.5 9.5c6 2 13 2 19 0M3 15c6 2 12 2 18 0" stroke="#FFFFFF" stroke-width="2" fill="none"></path></svg>
+      </div>
+      <div style="position: absolute; left: 640px; top: 330px; width: 72px; height: 110px">
+        <svg width="72" height="110" viewBox="0 0 72 110" aria-hidden="true"><path d="M36 60 C 10 50, 6 20, 20 8 C 26 30, 34 40, 36 60 Z" fill="#3FA34D"></path><path d="M36 60 C 62 50, 66 20, 52 8 C 46 30, 38 40, 36 60 Z" fill="#4CBB5C"></path><path d="M16 60 h40 l-6 46 h-28 z" fill="#E8770E"></path></svg>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; min-width: 0; box-sizing: border-box; border-radius: 32px; background: #FFFFFF; padding: 22px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 6px 0 #D3E0F5">
+      <span style="font-size: 26px; font-weight: 900">Магазин</span>
+      <div style="display: flex; gap: 8px" role="tablist" aria-label="Розділи магазину">
+        <button type="button" role="tab" aria-selected="true" style="height: 48px; padding: 0 20px; border-radius: 24px; border: 0; background: #5B3FD6; color: #FFFFFF; font-family: inherit; font-size: 18px; font-weight: 900; cursor: pointer">Одяг</button>
+        <button type="button" role="tab" aria-selected="false" style="height: 48px; padding: 0 20px; border-radius: 24px; border: 0; background: #F2F6FD; color: #4F5A78; font-family: inherit; font-size: 18px; font-weight: 900; cursor: pointer">Іграшки</button>
+        <button type="button" role="tab" aria-selected="false" style="height: 48px; padding: 0 20px; border-radius: 24px; border: 0; background: #F2F6FD; color: #4F5A78; font-family: inherit; font-size: 18px; font-weight: 900; cursor: pointer">Кімната</button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; flex-grow: 1">
+
+        <div style="border-radius: 22px; background: #F7FAFF; border: 3px solid #E3EAF7; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true"><path d="M10 42 C 10 18, 54 18, 54 42 Z" fill="#2F6FED"></path><rect x="8" y="38" width="48" height="12" rx="6" fill="#8FB4FF"></rect><circle cx="32" cy="12" r="8" fill="#FFFFFF" stroke="#8FB4FF" stroke-width="3"></circle></svg>
+          <span style="font-size: 18px; font-weight: 900">Шапочка</span>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: #FFB43C; color: #3A2400; font-family: inherit; font-size: 17px; font-weight: 900; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle></svg>20</button>
+        </div>
+
+        <div style="border-radius: 22px; background: #EAF7F0; border: 3px solid #1E9E63; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 70 34" aria-hidden="true"><path d="M35 17 L8 4 L8 30 Z" fill="#FF6FA5"></path><path d="M35 17 L62 4 L62 30 Z" fill="#FF6FA5"></path><circle cx="35" cy="17" r="8" fill="#E04F88"></circle></svg>
+          <span style="font-size: 18px; font-weight: 900">Бантик</span>
+          <span style="height: 40px; display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 900; color: #0F6B41"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #0F6B41; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round"><path d="M5 12l5 5 9-10"></path></svg>Вдягнено</span>
+        </div>
+
+        <div style="border-radius: 22px; background: #F7FAFF; border: 3px solid #E3EAF7; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true"><path d="M8 14 h48 v12 h-48 z" fill="#E5484D"></path><path d="M40 26 h12 v26 h-12 z" fill="#E5484D"></path><path d="M18 14 v12 M30 14 v12 M42 30 h10 M42 40 h10" stroke="#FFFFFF" stroke-width="4"></path></svg>
+          <span style="font-size: 18px; font-weight: 900">Шарфик</span>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: #FFB43C; color: #3A2400; font-family: inherit; font-size: 17px; font-weight: 900; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle></svg>25</button>
+        </div>
+
+        <div style="border-radius: 22px; background: #F7FAFF; border: 3px solid #E3EAF7; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true"><circle cx="18" cy="30" r="12" fill="#BFE3FF" stroke="#1E2440" stroke-width="4"></circle><circle cx="46" cy="30" r="12" fill="#BFE3FF" stroke="#1E2440" stroke-width="4"></circle><path d="M30 28 q2 -4 4 0" stroke="#1E2440" stroke-width="4" fill="none"></path></svg>
+          <span style="font-size: 18px; font-weight: 900">Окуляри</span>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: #FFB43C; color: #3A2400; font-family: inherit; font-size: 17px; font-weight: 900; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle></svg>40</button>
+        </div>
+
+        <div style="border-radius: 22px; background: #F7FAFF; border: 3px solid #E3EAF7; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true"><path d="M20 6 h24 l14 46 q-26 -8 -52 0 z" fill="#E5484D"></path><circle cx="32" cy="22" r="7" fill="#FFD45C"></circle></svg>
+          <span style="font-size: 18px; font-weight: 900">Плащ героя</span>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 20px; border: 0; background: #FFB43C; color: #3A2400; font-family: inherit; font-size: 17px; font-weight: 900; display: flex; align-items: center; gap: 6px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle></svg>90</button>
+        </div>
+
+        <div style="border-radius: 22px; background: #F7FAFF; border: 3px dashed #C9D6EE; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px">
+          <svg width="64" height="56" viewBox="0 0 64 56" aria-hidden="true"><path d="M8 44 L10 16 L22 28 L32 10 L42 28 L54 16 L56 44 Z" fill="#FFD45C" stroke="#E59A00" stroke-width="3" stroke-linejoin="round"></path></svg>
+          <span style="font-size: 18px; font-weight: 900">Корона</span>
+          <span style="height: 40px; display: flex; align-items: center; font-size: 16px; font-weight: 800; color: #4F5A78">200 · ще 72</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

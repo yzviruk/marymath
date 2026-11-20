@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Рівень пройдено</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="position: relative; width: 1280px; height: 800px; box-sizing: border-box; background: #EAF3FF; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; overflow: hidden; display: flex; align-items: center; justify-content: center">
+  <sc-for list="{{confetti}}" as="c" hint-placeholder-count="0">
+    <div aria-hidden="true" style="position: absolute; left: {{c.x}}px; top: {{c.y}}px; width: {{c.w}}px; height: {{c.h}}px; border-radius: 3px; background: {{c.color}}; transform: rotate({{c.r}}deg)"></div>
+  </sc-for>
+
+  <div style="position: relative; width: 980px; box-sizing: border-box; border-radius: 40px; background: #FFFFFF; padding: 36px 48px; display: flex; gap: 40px; box-shadow: 0 8px 0 #C9D9F2">
+    <div style="width: 300px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px">
+      <div style="width: 280px; height: 280px; border-radius: 140px; background: #FFF1DE; display: flex; align-items: center; justify-content: center">
+        <div style="transform: rotate(-8deg)">
+          <dc-import name="Pet" kind="dog" size="230" hint-size="230px,230px"></dc-import>
+        </div>
+      </div>
+      <div style="border-radius: 22px; background: #F1EDFF; padding: 12px 18px; font-size: 20px; line-height: 26px; font-weight: 800; color: #2A1F66; text-align: center">Ура! Я танцюю для тебе!</div>
+    </div>
+
+    <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+      <span style="font-size: 18px; font-weight: 800; color: #4F5A78">Додавання · Рівень +5</span>
+      <h1 style="margin: 0; font-size: 46px; line-height: 52px; font-weight: 900">Рівень пройдено!</h1>
+      <div style="display: flex; align-items: center; gap: 10px" role="img" aria-label="2 зірки з 3">
+        <svg width="84" height="84" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z" fill="#FFB400" stroke="#E59A00" stroke-width="0.8" stroke-linejoin="round"></path></svg>
+        <svg width="84" height="84" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z" fill="#FFB400" stroke="#E59A00" stroke-width="0.8" stroke-linejoin="round"></path></svg>
+        <svg width="84" height="84" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z" fill="#EEF2F8" stroke="#B7C5E3" stroke-width="1" stroke-linejoin="round"></path></svg>
+        <div style="display: flex; flex-direction: column; gap: 2px; margin-left: 8px">
+          <span style="font-size: 26px; font-weight: 900">9 з 10</span>
+          <span style="font-size: 16px; font-weight: 800; color: #4F5A78">третя зірка — за 10 з 10</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+        <div style="border-radius: 24px; background: #FFF6E3; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 30px; font-weight: 900">
+            <svg width="32" height="32" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#F5A524"></circle><circle cx="12" cy="12" r="6.5" fill="none" stroke="#FFD66B" stroke-width="2"></circle></svg>
+            +30
+          </span>
+          <span style="font-size: 15px; line-height: 20px; font-weight: 800; color: #6B4A00">8 з першої спроби × 3, 1 після підказки, бонус за рівень 5</span>
+        </div>
+        <div style="border-radius: 24px; background: #EAF7F0; padding: 16px 18px; display: flex; align-items: center; gap: 14px">
+          <div style="width: 72px; height: 72px; flex-shrink: 0; border-radius: 36px; background: #FFFFFF; border: 4px dashed #1E9E63; box-sizing: border-box; display: flex; align-items: center; justify-content: center; transform: rotate(-6deg)">
+            <span style="font-size: 26px; font-weight: 900; color: #138A55">+1</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 800; color: #0F6B41">Нова наліпка</span>
+            <span style="font-size: 20px; line-height: 24px; font-weight: 900">Перше перенесення</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px">
+        <a href="Map.dc.html" style="height: 72px; border-radius: 36px; background: #5B3FD6; color: #FFFFFF; font-size: 28px; font-weight: 900; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; box-shadow: 0 6px 0 #3E27A3">
+          Далі: рівень +6
+          <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink: 0; fill: none; stroke: #FFFFFF; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M9 5l7 7-7 7"></path></svg>
+        </a>
+        <div style="display: flex; gap: 14px">
+          <a href="Column.dc.html" style="flex: 1 1 0; height: 64px; border-radius: 32px; border: 3px solid #E3EAF7; box-sizing: border-box; background: #FFFFFF; color: #4F5A78; font-size: 22px; font-weight: 900; white-space: nowrap; display: flex; align-items: center; justify-content: center; text-decoration: none">Ще раз</a>
+          <a href="PetHome.dc.html" style="flex: 1 1 0; height: 64px; border-radius: 32px; background: #FFB43C; color: #3A2400; font-size: 22px; font-weight: 900; white-space: nowrap; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 0 #D98A12">До будиночка</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const colors = ['#FFB400', '#5B3FD6', '#1E9E63', '#E8770E', '#2F6FED', '#FF8FB8'];
+    const spots = [
+      [70, 60], [180, 140], [40, 300], [130, 520], [60, 700], [250, 40], [330, 740], [480, 30],
+      [620, 760], [760, 24], [900, 750], [1010, 36], [1120, 120], [1220, 260], [1180, 470], [1230, 660],
+      [1080, 740], [400, 770], [560, 50], [1160, 20]
+    ];
+    const confetti = spots.map((p, i) => ({
+      x: p[0], y: p[1],
+      w: i % 3 === 0 ? 10 : 16,
+      h: i % 3 === 0 ? 10 : 7,
+      r: (i * 37) % 180,
+      color: colors[i % colors.length]
+    }));
+    return { confetti };
+  }
+}
+</script>
+</body>
+</html>

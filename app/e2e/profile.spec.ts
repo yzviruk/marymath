@@ -1,0 +1,46 @@
+import { expect, test } from '@playwright/test';
+
+test('create a profile, keep it after reload, play the demo task', async ({ page }) => {
+  await page.goto('./');
+
+  // First start: the form opens by itself.
+  await expect(page.getByRole('heading', { name: 'Хто сьогодні грає?' })).toBeVisible();
+  await page.getByLabel('Імʼя').fill('Марія');
+  await page.getByRole('button', { name: 'Котик' }).click();
+  await page.getByRole('button', { name: 'Створити профіль' }).click();
+
+  // Straight to the map.
+  await expect(page.getByText('Карта островів')).toBeVisible();
+  await expect(page.getByText('Привіт, Марія!')).toBeVisible();
+
+  // Data survives a reload (IndexedDB).
+  await page.reload();
+  await expect(page.getByText('Привіт, Марія!')).toBeVisible();
+  await page.getByRole('button', { name: 'Змінити гравця' }).click();
+  await expect(page.getByRole('button', { name: /Марія/ })).toBeVisible();
+
+  // Demo task: keypad + number line.
+  await page.getByRole('button', { name: /Марія/ }).click();
+  await page.getByRole('button', { name: 'Пробне завдання' }).click();
+  await expect(page.getByRole('img', { name: 'Числова шкала від 0 до 20' })).toBeVisible();
+  await page.getByRole('button', { name: '1', exact: true }).click();
+  await page.getByRole('button', { name: '3', exact: true }).click();
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('img', { name: /стрибки: 0 → 3 → 6 → 9 → 12/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Стерти' }).click();
+  await page.keyboard.press('2');
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByText('Так! 3 × 4 = 12')).toBeVisible();
+
+  // Android back gesture returns to the map.
+  await page.goBack();
+  await expect(page.getByText('Карта островів')).toBeVisible();
+});
+
+test('PWA manifest is served', async ({ request }) => {
+  const res = await request.get('./manifest.webmanifest');
+  expect(res.ok()).toBeTruthy();
+  const manifest = await res.json();
+  expect(manifest.orientation).toBe('landscape');
+  expect(manifest.start_url).toBe('/marymath/');
+});

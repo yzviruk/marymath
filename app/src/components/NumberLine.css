@@ -1,0 +1,99 @@
+.nl {
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 4px 0 #d3e0f5;
+}
+.nl-axis {
+  position: absolute;
+  left: 24px;
+  top: 74px;
+  width: 1184px;
+  height: 4px;
+  border-radius: 2px;
+  background: #c9d6ee;
+}
+.nl-tick {
+  position: absolute;
+  top: 69px;
+  width: 3px;
+  height: 14px;
+  border-radius: 2px;
+  background: #b7c5e3;
+}
+.nl-tick.major {
+  top: 64px;
+  height: 24px;
+  background: #8c9bc0;
+}
+.nl-num {
+  position: absolute;
+  top: 88px;
+  width: 44px;
+  text-align: center;
+  font-size: 22px;
+  line-height: 26px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.nl-num.zero {
+  font-size: 18px;
+  color: #6b7591;
+}
+.nl-num.on {
+  font-weight: 900;
+  color: var(--accent);
+}
+.nl-arc {
+  position: absolute;
+  top: 20px;
+  height: 56px;
+  animation: nl-pop 0.35s ease-out both;
+}
+.nl-arc svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.nl-arc path {
+  fill: none;
+  stroke: #7c63f0;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.nl-arc polygon {
+  fill: #7c63f0;
+}
+.nl-arc-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -14px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 22px;
+  font-weight: 900;
+  color: var(--accent);
+}
+.nl-dot {
+  position: absolute;
+  top: 68px;
+  width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px #e6e0ff;
+}
+@keyframes nl-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-arc {
+    animation: none;
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dev-dist/
+test-results/
+playwright-report/
+*.tmp.mjs
+.claude/settings.local.json
+# Photos of the child's worksheets stay local (personal data).
+docs/worksheets/
+app/tsconfig.tsbuildinfo

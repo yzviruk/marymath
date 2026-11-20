@@ -1,0 +1,121 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Column.dc.html": {
+      "h": 800,
+      "title": "3 · Стовпчик",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "Division.dc.html": {
+      "h": 800,
+      "title": "4 · Ділення з предметами",
+      "w": 1280,
+      "x": 4080,
+      "y": 0
+    },
+    "Explain.dc.html": {
+      "h": 800,
+      "title": "5 · Пояснення помилки",
+      "w": 1280,
+      "x": 0,
+      "y": 920
+    },
+    "LevelDone.dc.html": {
+      "h": 800,
+      "title": "6 · Рівень пройдено",
+      "w": 1280,
+      "x": 1360,
+      "y": 920
+    },
+    "Main.dc.html": {
+      "h": 800,
+      "is_interactive": true,
+      "title": "1 · Хто грає?",
+      "w": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "Map.dc.html": {
+      "h": 800,
+      "title": "2 · Карта островів",
+      "w": 1280,
+      "x": 1360,
+      "y": 0
+    },
+    "NumberLine.dc.html": {
+      "h": 120,
+      "title": "Компонент · Числова шкала 0–20",
+      "w": 1232,
+      "x": 280,
+      "y": 2100
+    },
+    "Parent.dc.html": {
+      "h": 800,
+      "title": "8 · Панель батьків",
+      "w": 1280,
+      "x": 4080,
+      "y": 920
+    },
+    "Pet.dc.html": {
+      "h": 200,
+      "title": "Компонент · Улюбленець",
+      "w": 200,
+      "x": 0,
+      "y": 2100
+    },
+    "PetHome.dc.html": {
+      "h": 800,
+      "title": "7 · Будиночок і магазин",
+      "w": 1280,
+      "x": 2720,
+      "y": 920
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-20T21:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "noteOrder": [
+    "t-screens",
+    "t-parts"
+  ],
+  "notes": {
+    "t-parts": {
+      "kind": "title1",
+      "maxW": 1512,
+      "text": "Спільні компоненти",
+      "w": 240,
+      "x": 0,
+      "y": 1860
+    },
+    "t-screens": {
+      "kind": "title1",
+      "maxW": 5360,
+      "text": "MaryMath — екрани для планшета 1280×800",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Map.dc.html",
+    "Column.dc.html",
+    "Division.dc.html",
+    "Explain.dc.html",
+    "LevelDone.dc.html",
+    "PetHome.dc.html",
+    "Parent.dc.html",
+    "Pet.dc.html",
+    "NumberLine.dc.html"
+  ],
+  "pages": [],
+  "title": "MaryMath — макети екранів"
+}

@@ -1,0 +1,184 @@
+:root {
+  --bg: #eaf3ff;
+  --ink: #1e2440;
+  --muted: #4f5a78;
+  --accent: #5b3fd6;
+  --accent-dark: #3e27a3;
+  --accent-soft: #f1edff;
+  --hundreds: #2f6fed;
+  --tens: #138a55;
+  --ones: #e8770e;
+  --success: #1e9e63;
+  --success-dark: #137447;
+  --coin: #f5a524;
+  --line: #e3eaf7;
+  --card-shadow: #c9d9f2;
+  --soft-shadow: #d3e0f5;
+  --danger: #d6455d;
+
+  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  overscroll-behavior: none;
+  user-select: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+input {
+  user-select: text;
+}
+
+:focus-visible {
+  outline: 4px solid #b9a8ff;
+  outline-offset: 2px;
+}
+
+/* 1280×800 design canvas, scaled to fit the device screen. */
+.viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stage {
+  position: relative;
+  width: 1280px;
+  height: 800px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--bg);
+  transform-origin: center center;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.topbar-title {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.chip-btn {
+  height: 52px;
+  padding: 0 20px 0 14px;
+  border: 0;
+  border-radius: 26px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--muted);
+  box-shadow: 0 4px 0 var(--soft-shadow);
+}
+.chip-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.coins {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 26px;
+  background: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  box-shadow: 0 4px 0 var(--soft-shadow);
+}
+
+.btn-primary,
+.btn-success {
+  height: 72px;
+  padding: 0 32px;
+  border: 0;
+  border-radius: 36px;
+  color: #fff;
+  font-size: 26px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  box-shadow: 0 6px 0 var(--accent-dark);
+}
+.btn-success {
+  background: var(--success);
+  box-shadow: 0 6px 0 var(--success-dark);
+}
+.btn-primary:active,
+.btn-success:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+.btn-primary:disabled,
+.btn-success:disabled {
+  opacity: 0.55;
+}
+
+.panel {
+  border-radius: 32px;
+  background: #fff;
+  box-shadow: 0 6px 0 var(--card-shadow);
+}
+
+.bubble {
+  border-radius: 22px 22px 22px 6px;
+  background: var(--accent-soft);
+  padding: 14px 18px;
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 800;
+  color: #2a1f66;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
