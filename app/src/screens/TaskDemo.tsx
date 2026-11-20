@@ -47,6 +47,11 @@ export function TaskDemo({ profile, onBack }: { profile: Profile; onBack: () => 
   function digit(d: number) {
     if (status === 'right') return;
     setStatus('typing');
+    // After a wrong check the first new digit replaces the old answer instead of appending to it.
+    if (status === 'wrong') {
+      setTyped(String(d));
+      return;
+    }
     setTyped((t) => (t.length >= MAX_DIGITS || (t === '0' && d === 0) ? t : t === '0' ? String(d) : t + d));
   }
   function erase() {

@@ -27,8 +27,12 @@ test('create a profile, keep it after reload, play the demo task', async ({ page
   await page.getByRole('button', { name: '3', exact: true }).click();
   await page.getByRole('button', { name: 'Перевірити' }).click();
   await expect(page.getByRole('img', { name: /стрибки: 0 → 3 → 6 → 9 → 12/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Стерти' }).click();
+  await expect(page.getByLabel('Твоя відповідь')).toHaveText('13');
+  // After a wrong answer the first new digit replaces the old answer.
+  await page.getByRole('button', { name: '1', exact: true }).click();
+  await expect(page.getByLabel('Твоя відповідь')).toHaveText('1');
   await page.keyboard.press('2');
+  await expect(page.getByLabel('Твоя відповідь')).toHaveText('12');
   await page.getByRole('button', { name: 'Перевірити' }).click();
   await expect(page.getByText('Так! 3 × 4 = 12')).toBeVisible();
 
