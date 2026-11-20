@@ -29,8 +29,26 @@
 3 Стовпчик (зроблено) → 4 × і : (перша проба з Марією) → 5 Гейміфікація → 6 Статистика/батьки → 7 Реліз.
 
 ## Робочі правила
-- Спочатку погодження з користувачем, потім імплементація.
+- Спочатку погодження з користувачем, потім імплементація. Кожен етап: короткий план → «погоджую» → код → тести → push → оновити план (чекліст у кінці розділу «Дизайн у Claude Design»), CLAUDE.md і пам'ять.
+- Поле відповіді: перша цифра після невдалої перевірки замінює старе значення (у стовпчику — вміст клітинки під курсором).
 - Публікація артефактів іноді блокується класифікатором дозволів — повторити або попросити користувача підтвердити.
+  Публікація в полотно: спершу `read` артефакту (без `path`), інакше відмова «haven't viewed the latest version».
+- Windows: імена файлів не чутливі до регістру — не створювати `foo.ts` поруч із `Foo.tsx`. Файли з лапками/апострофами писати Write, не bash-heredoc.
+- Перевірка вигляду: `npm run build && npm run preview` (порт 4173) + скриншоти Playwright у scratchpad; після — зупинити сервер.
+
+## Карта коду (`app/src/`)
+- `engine/` — чиста логіка без React: `levels.ts` (усі рівні й боси), `tasks.ts` (форми завдань: column, fact, repeated-add, commutative, div-compose, fact-family; `Task.lines` з blank-ами), `check.ts` (`isCorrect`, `classifyError`), `session.ts` (`buildLevel`, `similarTask`), `column.ts`, `describe.ts`.
+- `column/` — екран стовпчика: `columnInput.ts` (стан введення), `texts.ts` (репліки й кроки пояснення), `disks.ts` + `DiskPanel.tsx` (кружечки, drag), `ColumnBoard.tsx`, `ColumnTask.tsx` (3 кроки помилки).
+- `screens/` — `WhoPlays`, `MapScreen` (тимчасова карта: + і − рівні відкриті), `LevelRun` (10 завдань, монетки 3/1/1, бонус 5, зірки 7/9/10, повтор учорашніх помилок), `LevelDone`, `LevelsPreview` (батьки → «Приклади рівнів»), `StubScreen`.
+- `components/` — `NumberLine` + `lineGeometry.ts` (дуги, `multiplicationPath`, `divisionPath`, `bridgeTenPath`, `bridgeBackPath`), `Keypad`, `Pet`, `Icons`.
+- `data/` — IndexedDB v2 (`profiles`, `meta`, `attempts`); `profiles.ts` (`addCoins`, `recordLevelStars`), `attempts.ts` (`saveAttempt`, `columnReviewTasks`).
+- Маршрути: `router.ts` (history state, жест «назад» Android). `LevelRun` зараз рендерить лише `ColumnTask` — етап 4 додає завдання × і :.
+
+## Етап 4 — вхідні дані
+- Макети: `Division.dc.html` (екран 4, :1 з кошиками й bar model), `Explain.dc.html` (екран 5, пояснення «4 : 6 = 24»).
+- Генератори ×1…×6, :1…:5 і боси вже є (`engine/levels.ts`); `Task.picture` описує групи/масив/кошики, `choices` — числа для :3.
+- План (розділ «Сингапурська методика»): рівні групи, масиви з поворотом, перетягування предметів у кошики (:1), обведення груп (:2), bar model, сімейство фактів; приклади понад 20 — додаткова тимчасова шкала або групи предметів.
+- Етап завершується першою пробою з Марією на планшеті.
 
 ## Код і деплой
 - Репозиторій: https://github.com/yzviruk/marymath (публічний); сайт: https://yzviruk.github.io/marymath/
