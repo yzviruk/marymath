@@ -3,6 +3,7 @@ import { listProfiles } from './data/profiles';
 import type { Profile } from './data/types';
 import { UpdatePrompt } from './pwa/UpdatePrompt';
 import { useRouter } from './router';
+import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
 import { StubScreen } from './screens/StubScreen';
 import { TaskDemo } from './screens/TaskDemo';
@@ -70,11 +71,15 @@ export function App() {
         screen = (
           <StubScreen
             title="Панель батьків"
-            text="Тут будуть PIN, профілі, статистика і резервна копія (етап 6)."
+            text="Тут будуть PIN, профілі, статистика і резервна копія (етап 6). Уже зараз можна переглянути приклади кожного рівня."
             backLabel="Хто грає?"
             onBack={back}
+            action={{ label: 'Приклади рівнів', onClick: () => go({ name: 'levels' }) }}
           />
         );
+        break;
+      case 'levels':
+        screen = <LevelsPreview onBack={back} />;
         break;
     }
   }

@@ -8,10 +8,11 @@ interface Props {
   backLabel: string;
   onBack: () => void;
   pet?: PetKind;
+  action?: { label: string; onClick: () => void };
 }
 
 /** Temporary screen for parts that arrive in later stages. */
-export function StubScreen({ title, text, backLabel, onBack, pet }: Props) {
+export function StubScreen({ title, text, backLabel, onBack, pet, action }: Props) {
   return (
     <div className="screen">
       <div className="topbar">
@@ -26,7 +27,14 @@ export function StubScreen({ title, text, backLabel, onBack, pet }: Props) {
         style={{ margin: 'auto', width: 720, padding: 48, display: 'flex', alignItems: 'center', gap: 32 }}
       >
         {pet && <Pet kind={pet} size={160} />}
-        <p style={{ margin: 0, fontSize: 26, lineHeight: '34px', fontWeight: 800 }}>{text}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'flex-start' }}>
+          <p style={{ margin: 0, fontSize: 26, lineHeight: '34px', fontWeight: 800 }}>{text}</p>
+          {action && (
+            <button type="button" className="btn-primary" onClick={action.onClick}>
+              {action.label}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -5,7 +5,8 @@ export type Route =
   | { name: 'map'; profileId: string }
   | { name: 'task'; profileId: string }
   | { name: 'petHome'; profileId: string }
-  | { name: 'parent' };
+  | { name: 'parent' }
+  | { name: 'levels' };
 
 const START: Route = { name: 'who' };
 

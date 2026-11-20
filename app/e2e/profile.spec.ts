@@ -48,3 +48,17 @@ test('PWA manifest is served', async ({ request }) => {
   expect(manifest.orientation).toBe('landscape');
   expect(manifest.start_url).toBe('/marymath/');
 });
+
+test('parent can preview generated tasks of every level', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Для батьків' }).click();
+  await page.getByRole('button', { name: 'Приклади рівнів' }).click();
+  await expect(page.getByRole('listitem')).toHaveCount(10);
+  await page.getByRole('tab', { name: 'Ділення' }).click();
+  await page.getByRole('tab', { name: ':3' }).click();
+  await expect(page.getByText('Склади приклад за малюнком')).toBeVisible();
+  await expect(page.getByRole('listitem')).toHaveCount(10);
+  const before = await page.getByRole('list').innerText();
+  await page.getByRole('button', { name: 'Ще' }).click();
+  await expect(page.getByRole('list')).not.toHaveText(before);
+});
