@@ -174,10 +174,20 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await expect(page.getByRole('heading', { name: 'Рівень пройдено!' })).toBeVisible();
   await expect(page.getByText('10 з 10')).toBeVisible();
   await expect(page.getByRole('img', { name: '3 зірки з 3' })).toBeVisible();
-  await expect(page.getByText('+35')).toBeVisible();
+  await expect(page.getByText('+20')).toBeVisible();
   await page.getByRole('button', { name: 'Карта' }).click();
   await expect(page.getByRole('button', { name: 'Рівень +1, зірок: 3' })).toBeVisible();
-  await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
+  await expect(page.locator('.coins').filter({ hasText: '20' })).toBeVisible();
+});
+
+test('a level with 3 stars already pays no coins again', async ({ page }) => {
+  await createProfile(page);
+  await patchProfile(page, { coins: 7, levelStars: { '+1': 3 }, stars: 3 });
+  await openLevel(page, '+1');
+  for (let i = 0; i < 10; i++) await solveCurrent(page);
+  await expect(page.getByText('Тут уже 3 зірки — нові монетки чекають далі!')).toBeVisible();
+  await page.getByRole('button', { name: 'Карта' }).click();
+  await expect(page.locator('.coins').filter({ hasText: '7' })).toBeVisible();
 });
 
 test('map: islands fit the sea, passing a level opens the next, «Продовжити» leads on', async ({ page }) => {

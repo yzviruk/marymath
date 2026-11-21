@@ -24,6 +24,7 @@ import {
 import { DiskPanel } from './DiskPanel';
 import { disksAt } from './disks';
 import { coachLine, explainIntro, isLeadingZero, PLACE_GEN, placeJumps, placeStep } from './texts';
+import { taskCoins } from '../engine/rewards';
 import './ColumnTask.css';
 
 export type Outcome = 'first' | 'second' | 'explained';
@@ -126,7 +127,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
     onCheck({ value, correct, error, tryNo, hintUsed, ms: Date.now() - started.current });
 
     if (correct) {
-      const coins = tries === 0 && !hintUsed ? 3 : 1;
+      const coins = taskCoins(tries === 0 && !hintUsed, false);
       setOutcome({ outcome: tries === 0 ? 'first' : 'second', coins });
       setPhase('solved');
       setWrong([]);
@@ -169,7 +170,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
       setJumpPlace(null);
       setExplainPlace(p);
       setPhase('explained');
-      setOutcome({ outcome: 'explained', coins: 1 });
+      setOutcome({ outcome: 'explained', coins: 0 });
       setSay(`Ось так! ${column.a} ${column.op} ${column.b} = ${column.result}. Тепер схожий приклад.`);
       return;
     }

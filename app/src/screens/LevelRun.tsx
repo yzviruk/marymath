@@ -4,10 +4,11 @@ import { BackIcon, CoinIcon } from '../components/Icons';
 import { reviewTasks, saveAttempt } from '../data/attempts';
 import { FactTask } from '../facts/FactTask';
 import type { FactMode } from '../facts/texts';
-import { addCoins, recordLevelStars } from '../data/profiles';
+import { addCoins, getProfile, recordLevelStars } from '../data/profiles';
 import { grantItem } from '../data/shop';
 import type { Profile } from '../data/types';
 import { getLevel, ISLANDS, LEVELS } from '../engine/levels';
+import { levelReward } from '../engine/rewards';
 import { rareItemFor, wornIds } from '../engine/shop';
 import { randomSeed } from '../engine/rng';
 import { buildLevel, similarTask, TASKS_PER_LEVEL } from '../engine/session';
@@ -33,8 +34,6 @@ function factModes(levelId: string, boss: boolean, tasks: Task[]): FactMode[] {
     return PICTURE_LEVELS.includes(levelId) ? 'pictorial' : 'abstract';
   });
 }
-export const LEVEL_BONUS = 5;
-
 /** Stars for a level: 7, 9 or 10 right out of 10 (right = solved before the explanation). */
 export function starsFor(right: number): number {
   return right >= 10 ? 3 : right >= 9 ? 2 : right >= 7 ? 1 : 0;
@@ -61,13 +60,15 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<Outcome[]>([]);
   const [earned, setEarned] = useState(0);
-  const [finished, setFinished] = useState<{ stars: number; right: number; bonus: number; rare: string | null } | null>(null);
+  const [finished, setFinished] = useState<{ stars: number; right: number; bonus: number; full: boolean; rare: string | null } | null>(null);
+  /** The level already had 3 stars when this run began: no coins here, they wait further on. */
+  const [levelFull, setLevelFull] = useState(false);
 
   // Build the level (with yesterday's mistakes of this island mixed in).
   useEffect(() => {
     let alive = true;
     const islandLevels = LEVELS.filter((l) => l.island === level.island && !l.boss).map((l) => l.id);
-    void reviewTasks(profile.id, islandLevels).then((review) => {
+    void Promise.all([reviewTasks(profile.id, islandLevels), getProfile(profile.id)]).then(([review, fresh]) => {
       if (!alive) return;
       const tasks = buildLevel(levelId, { seed: randomSeed(), review: level.boss ? [] : review });
       setSlots(tasks.map((task) => ({ task, extra: false })));
@@ -75,6 +76,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
       setResults([]);
       setEarned(0);
       setFinished(null);
+      setLevelFull((fresh?.levelStars?.[levelId] ?? 0) >= 3);
     });
     return () => {
       alive = false;
@@ -111,6 +113,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
         stars={finished.stars}
         coins={earned + finished.bonus}
         bonus={finished.bonus}
+        levelFull={finished.full}
         nextLabel={next ? (getLevel(next).boss ? 'Далі: бос острова' : `Далі: рівень ${next}`) : null}
         onAgain={() => setRun((r) => r + 1)}
         onNext={() => next && onNextLevel(next)}
@@ -142,9 +145,12 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
     });
   }
 
-  async function done(outcome: Outcome, coins: number) {
-    setEarned((e) => e + coins);
-    void addCoins(profile.id, coins);
+  async function done(outcome: Outcome, taskCoins: number) {
+    const coins = levelFull ? 0 : taskCoins;
+    if (coins) {
+      setEarned((e) => e + coins);
+      void addCoins(profile.id, coins);
+    }
     let list = slots!;
     const nextResults = slot.extra ? results : [...results, outcome];
     if (outcome === 'explained') {
@@ -159,14 +165,15 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
     }
     const right = nextResults.filter((o) => o !== 'explained').length;
     const stars = starsFor(right);
-    const bonus = stars > 0 ? LEVEL_BONUS : 0;
+    const before = (await getProfile(profile.id))?.levelStars?.[levelId] ?? 0;
+    const bonus = levelReward(levelId, stars, before);
     if (bonus) await addCoins(profile.id, bonus);
     await recordLevelStars(profile.id, levelId, stars);
     // The first passed boss of an island gives its rare thing.
     const rare = level.boss && stars > 0 ? rareItemFor(level.island) : null;
     const got = rare ? await grantItem(profile.id, rare.id) : null;
     await onProfileChanged();
-    setFinished({ stars, right, bonus, rare: got && rare ? rare.id : null });
+    setFinished({ stars, right, bonus, full: levelFull, rare: got && rare ? rare.id : null });
   }
 
   return (

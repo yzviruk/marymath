@@ -15,6 +15,8 @@ interface Props {
   stars: number;
   coins: number;
   bonus: number;
+  /** The level had 3 stars already: no coins this time. */
+  levelFull?: boolean;
   nextLabel: string | null;
   onAgain: () => void;
   onNext: () => void;
@@ -24,7 +26,7 @@ interface Props {
 const STAR = 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z';
 
 /** Simple level result (screen 6); stickers and the pet's dance come in stage 5. */
-export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, bonus, nextLabel, onAgain, onNext, onMap }: Props) {
+export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, bonus, levelFull, nextLabel, onAgain, onNext, onMap }: Props) {
   const passed = stars > 0;
   return (
     <div className="screen ld">
@@ -65,8 +67,14 @@ export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, 
           )}
           <div className="ld-coins">
             <CoinIcon size={32} />
-            <b>+{coins}</b>
-            {bonus > 0 && <span>разом з бонусом за рівень {bonus}</span>}
+            {levelFull ? (
+              <span>Тут уже 3 зірки — нові монетки чекають далі!</span>
+            ) : (
+              <>
+                <b>+{coins}</b>
+                {bonus > 0 && <span>разом з нагородою за {stars === 1 ? 'зірку' : 'зірки'} {bonus}</span>}
+              </>
+            )}
           </div>
           <div className="ld-actions">
             {nextLabel && passed ? (

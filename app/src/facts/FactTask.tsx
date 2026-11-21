@@ -47,6 +47,7 @@ import {
   type FactMode,
 } from './texts';
 import { count, GROUP } from './words';
+import { taskCoins } from '../engine/rewards';
 import '../column/ColumnTask.css';
 import './FactTask.css';
 
@@ -179,7 +180,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
     setEx((e) => e && { ...e, input: { ...e.input, values, cursor: null } });
     setInput({ values, cursor: null, fresh: values.map(() => false) });
     setPhase('explained');
-    setOutcome({ outcome: 'explained', coins: 1 });
+    setOutcome({ outcome: 'explained', coins: 0 });
     setSay(`Ось так! ${solvedLine(task).replace('Правильно! ', '')} Тепер схожий приклад.`);
     const path = factPath(task.main);
     setLine({ path: path ?? [], labels: 'count' });
@@ -232,7 +233,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
     if (correct) {
       setOutcome({
         outcome: tries === 0 ? 'first' : 'second',
-        coins: tries === 0 && !hintUsed ? 3 : 1,
+        coins: taskCoins(tries === 0 && !hintUsed, false),
       });
       setPhase('solved');
       setWrong([]);
