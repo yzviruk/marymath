@@ -1,8 +1,8 @@
 import { digitCount, type ColumnInfo } from '../engine/column';
 
-/** A box the child can type into: an answer digit or a carry digit written above a place. */
+/** A box the child can type into: an answer digit under a place. */
 export interface Cell {
-  kind: 'answer' | 'carry';
+  kind: 'answer';
   place: number;
 }
 
@@ -10,7 +10,7 @@ export interface ColumnInput {
   width: number;
   /** Answer digits by place (0 = ones); null = empty. */
   answer: (number | null)[];
-  /** Carry written above a place (index = the place that receives it); index 0 is unused. */
+  /** Carry «1» put above a place by a tap (index = the place that receives it); index 0 is unused. */
   carry: (number | null)[];
   /** Subtraction: top digit of a place crossed out because it lent to the place below. */
   crossed: boolean[];
@@ -33,10 +33,6 @@ const set = <T>(list: T[], i: number, v: T) => list.map((x, j) => (j === i ? v :
 export function typeDigit(s: ColumnInput, d: number): ColumnInput {
   const c = s.cursor;
   if (!c) return s;
-  if (c.kind === 'carry') {
-    // After writing the carry, go back to the answer box under it.
-    return { ...s, carry: set(s.carry, c.place, d), cursor: { kind: 'answer', place: c.place } };
-  }
   const answer = set(s.answer, c.place, d);
   const next = c.place + 1 < s.width ? { kind: 'answer' as const, place: c.place + 1 } : c;
   return { ...s, answer, cursor: next };
@@ -46,7 +42,6 @@ export function typeDigit(s: ColumnInput, d: number): ColumnInput {
 export function erase(s: ColumnInput): ColumnInput {
   const c = s.cursor;
   if (!c) return s;
-  if (c.kind === 'carry') return { ...s, carry: set(s.carry, c.place, null) };
   if (s.answer[c.place] !== null) return { ...s, answer: set(s.answer, c.place, null) };
   if (c.place === 0) return s;
   const place = c.place - 1;
@@ -55,8 +50,16 @@ export function erase(s: ColumnInput): ColumnInput {
 
 export function focus(s: ColumnInput, cell: Cell): ColumnInput {
   if (cell.place < 0 || cell.place >= s.width) return s;
-  if (cell.kind === 'carry' && cell.place === 0) return s;
   return { ...s, cursor: cell };
+}
+
+/**
+ * Tap on the carry circle above a place (addition): a carry is always 1, so the tap puts «1»
+ * there and a second tap takes it away. The cursor stays where it was.
+ */
+export function toggleCarry(s: ColumnInput, place: number): ColumnInput {
+  if (place < 1 || place >= s.width) return s;
+  return { ...s, carry: set(s.carry, place, s.carry[place] === 1 ? null : 1) };
 }
 
 /** Tap on a top digit (subtraction): cross it out to lend a ten to the place below, or undo. */

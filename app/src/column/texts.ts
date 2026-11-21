@@ -16,7 +16,6 @@ export const UNIT_ACC = ['одиницю', 'десяток', 'сотню', 'ти
 export function coachLine(s: ColumnInput, column: ColumnInfo): string {
   const c = s.cursor;
   if (!c) return 'Готово? Натисни «Перевірити».';
-  if (c.kind === 'carry') return `Скільки ${PLACE_GEN[c.place]} переносимо зверху?`;
   const p = column.places[c.place];
   const name = PLACE[c.place];
   if (column.op === '+') {

@@ -16,11 +16,12 @@ interface Props {
   shakeKey: number;
   locked: boolean;
   onCell: (cell: Cell) => void;
+  onCarry: (place: number) => void;
   onCross: (place: number) => void;
 }
 
 /** The column itself: place letters, carry boxes, the two numbers and the answer boxes. */
-export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCell, onCross }: Props) {
+export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCell, onCarry, onCross }: Props) {
   const places = Array.from({ length: column.width }, (_, i) => column.width - 1 - i); // left → right
   const aDigits = digitCount(column.a);
   const bDigits = digitCount(column.b);
@@ -48,9 +49,10 @@ export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCe
               <button
                 key={`c${p}`}
                 type="button"
-                className={`cb-carry${isCursor('carry', p) ? ' cursor' : ''}${input.carry[p] !== null ? ' filled' : ''}`}
+                className={`cb-carry${input.carry[p] !== null ? ' filled' : ''}`}
                 aria-label={`Перенесення над ${PLACE[p].toLowerCase()}`}
-                onClick={() => onCell({ kind: 'carry', place: p })}
+                aria-pressed={input.carry[p] === 1}
+                onClick={() => onCarry(p)}
                 disabled={locked}
               >
                 {input.carry[p] ?? ''}

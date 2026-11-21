@@ -64,10 +64,6 @@
   border-color: var(--accent);
   background: var(--accent-soft);
 }
-.cb-carry.cursor {
-  border: 3px solid var(--accent);
-  box-shadow: 0 0 0 5px #e6e0ff;
-}
 .cb-digit,
 .cb-sign {
   font-size: 76px;

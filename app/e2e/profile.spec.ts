@@ -54,8 +54,11 @@ test('column: carry written on top, coach names places only', async ({ page }) =
   await expect(page.getByRole('status').filter({ hasText: `Одиниці: ${t.a % 10} + ${t.b % 10}.` })).toBeVisible();
 
   await page.getByRole('button', { name: String(t.result % 10), exact: true }).click();
-  await page.getByRole('button', { name: 'Перенесення над десятки' }).click();
-  await page.getByRole('button', { name: '1', exact: true }).click();
+  // A tap puts «1» into the carry circle at once; the keypad is not needed.
+  const carry = page.getByRole('button', { name: 'Перенесення над десятки' });
+  await carry.click();
+  await expect(carry).toHaveText('1');
+  await expect(carry).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('status').filter({ hasText: 'і ще 1 зверху' })).toBeVisible();
   await page.getByRole('button', { name: String(Math.floor(t.result / 10)), exact: true }).click();
   await page.getByRole('button', { name: 'Перевірити' }).click();
@@ -143,6 +146,25 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await page.getByRole('button', { name: 'Карта' }).click();
   await expect(page.getByRole('button', { name: 'Рівень +1, зірок: 3' })).toBeVisible();
   await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
+});
+
+test('column: disks are split only while needed and stay inside the panel', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '−5');
+  const panel = (await page.locator('.dp').boundingBox())!;
+  // Try to break every disk again and again, biggest place first.
+  for (const value of [1000, 100, 10]) {
+    const btn = page.getByRole('button', { name: `Розміняти кружечок ${value}`, exact: true });
+    if (!(await btn.count())) continue;
+    for (let i = 0; i < 12; i++) await btn.dispatchEvent('click');
+  }
+  await expect(page.locator('.dp-note')).toContainText('уже досить');
+  for (const place of [0, 1, 2]) expect(await page.getByTestId(`disk-${place}`).count()).toBeLessThanOrEqual(19);
+  for (const disk of await page.locator('.dp-disk').all()) {
+    const b = (await disk.boundingBox())!;
+    expect(b.y + b.height).toBeLessThanOrEqual(panel.y + panel.height);
+    expect(b.x + b.width).toBeLessThanOrEqual(panel.x + panel.width);
+  }
 });
 
 test('map: all five islands fit inside the 1280×800 stage', async ({ page }) => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { columnAdd, columnSub } from '../engine/column';
-import { canMerge, disksAt, initialDisks, merge, split } from './disks';
+import { canMerge, diskSize, disksAt, initialDisks, merge, split, splitHelps } from './disks';
 
 describe('place-value disks', () => {
   it('addition starts with both numbers and merges 10 ones into a ten', () => {
@@ -33,5 +33,25 @@ describe('place-value disks', () => {
   it('ends with the digits of the result for addition', () => {
     const c = columnAdd(999, 1);
     expect(disksAt(c, 4)).toEqual([0, 0, 0, 1]);
+  });
+
+  it('a disk is split only while the place to the right lacks disks', () => {
+    const c = columnSub(52, 17);
+    expect(splitHelps(c, [2, 5], 1)).toBe(true); // 2 ones, 7 to take away
+    expect(splitHelps(c, [12, 4], 1)).toBe(false); // already enough
+    const z = columnSub(400, 107);
+    expect(splitHelps(z, [0, 0, 4], 2)).toBe(true); // tens are empty and pass the borrow on
+    expect(splitHelps(z, [0, 10, 3], 1)).toBe(true);
+    expect(splitHelps(z, [10, 9, 3], 1)).toBe(false);
+    expect(splitHelps(z, [10, 9, 3], 2)).toBe(false);
+  });
+
+  it('many disks get smaller so a column holds up to 19 of them', () => {
+    expect(diskSize(5, 2, 30)).toBe(30);
+    for (const columns of [2, 3, 4]) {
+      const s = diskSize(19, columns, 30);
+      expect(s).toBeGreaterThanOrEqual(20);
+      expect(s).toBeLessThanOrEqual(30);
+    }
   });
 });

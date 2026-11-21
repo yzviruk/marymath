@@ -71,8 +71,8 @@
   gap: 5px;
 }
 .dp-disk {
-  width: 30px;
-  height: 30px;
+  width: var(--d, 30px);
+  height: var(--d, 30px);
   border-radius: 50%;
   color: #fff;
   font-size: 11px;
@@ -88,19 +88,13 @@
   background: var(--ones);
 }
 .dp-disk.p1 {
-  width: 34px;
-  height: 34px;
   background: var(--tens);
 }
 .dp-disk.p2 {
-  width: 40px;
-  height: 40px;
   font-size: 12px;
   background: var(--hundreds);
 }
 .dp-disk.p3 {
-  width: 44px;
-  height: 44px;
   font-size: 12px;
   background: var(--accent);
 }

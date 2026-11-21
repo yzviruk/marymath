@@ -29,6 +29,31 @@ export function split(d: Disks, place: number): Disks {
 }
 
 /**
+ * Subtraction: splitting a disk of `place` makes sense only while the place to its right lacks
+ * disks for what is taken away there, or is empty and passes the borrow on (400 − 107).
+ * Keeps the child from breaking disks without end.
+ */
+export function splitHelps(column: ColumnInfo, d: Disks, place: number): boolean {
+  for (let q = place - 1; q >= 0; q--) {
+    if (d[q] < column.places[q].b) return true;
+    if (d[q] !== 0) return false;
+  }
+  return false;
+}
+
+/** Disk size (px) so that `count` disks fit a column of the panel with `columns` places. */
+export function diskSize(count: number, columns: number, base: number): number {
+  const width = (344 - 8 * (columns - 1)) / columns - 14;
+  const height = 250;
+  const gap = 5;
+  for (let s = base; s > 18; s--) {
+    const perRow = Math.max(1, Math.floor((width + gap) / (s + gap)));
+    if (Math.ceil(count / perRow) * (s + gap) - gap <= height) return s;
+  }
+  return 18;
+}
+
+/**
  * Disks as they look while the child works on `active` place (the pictorial mode):
  * addition merges every place below it, subtraction makes the borrows the active place needs.
  */

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import type { ColumnInfo } from '../engine/column';
-import { canMerge, canSplit, DISK_VALUE, initialDisks, merge, split, type Disks } from './disks';
-import { PLACE } from './texts';
+import { canMerge, canSplit, DISK_VALUE, diskSize, initialDisks, merge, split, splitHelps, type Disks } from './disks';
+import { PLACE, PLACE_GEN } from './texts';
 import './DiskPanel.css';
 
 interface Props {
@@ -43,10 +43,12 @@ export function DiskPanel({ column, draggable, shown }: Props) {
         setNote(`Щоб обміняти, потрібно 10 кружечків «${DISK_VALUE[from]}».`);
       }
     } else if (!add && to === from - 1) {
-      if (canSplit(own, from)) {
+      if (canSplit(own, from) && splitHelps(column, own, from)) {
         setOwn(split(own, from));
         setPulse(to);
         setNote(`1 ${unitName(from)} → 10 кружечків «${DISK_VALUE[to]}»!`);
+      } else if (canSplit(own, from)) {
+        setNote(`${capital(PLACE_GEN[to])} уже досить — розмінювати не треба.`);
       }
     } else {
       setNote(add ? 'Тягни у сусідній стовпчик ліворуч.' : 'Тягни у сусідній стовпчик праворуч.');
@@ -91,7 +93,11 @@ export function DiskPanel({ column, draggable, shown }: Props) {
               onAnimationEnd={() => setPulse(null)}
             >
               <span className="dp-name">{PLACE[place]}</span>
-              <div className="dp-disks" aria-label={`${PLACE[place]}: ${disks[place]}`}>
+              <div
+                className="dp-disks"
+                aria-label={`${PLACE[place]}: ${disks[place]}`}
+                style={{ '--d': `${diskSize(disks[place], places.length, BASE_SIZE[place])}px` } as React.CSSProperties}
+              >
                 {Array.from({ length: disks[place] }, (_, i) => {
                   const moving = drag && drag.place === place && drag.index === i;
                   return (
@@ -136,6 +142,11 @@ export function DiskPanel({ column, draggable, shown }: Props) {
     </div>
   );
 }
+
+/** Disk size per place when there are few of them; many disks get smaller to fit the column. */
+const BASE_SIZE = [30, 34, 40, 44];
+
+const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
 
 function unitName(place: number): string {
   return ['одиниця', 'десяток', 'сотня', 'тисяча'][place];

@@ -9,6 +9,7 @@ import {
   missingBorrows,
   missingCarries,
   shownTop,
+  toggleCarry,
   toggleCross,
   typeDigit,
   wrongPlaces,
@@ -29,12 +30,13 @@ describe('column input', () => {
     expect(wrongPlaces(s, c)).toEqual([]);
   });
 
-  it('writes the carry above and returns under it', () => {
+  it('a tap on the carry circle puts 1 there (a second tap takes it away), the cursor stays', () => {
     let s = typeDigit(initialInput(c), 5);
-    s = focus(s, { kind: 'carry', place: 1 });
-    s = typeDigit(s, 1);
+    s = toggleCarry(s, 1);
     expect(s.carry[1]).toBe(1);
     expect(s.cursor).toEqual({ kind: 'answer', place: 1 });
+    expect(toggleCarry(s, 1).carry[1]).toBeNull();
+    expect(toggleCarry(s, 0)).toBe(s); // nothing is carried into the ones
     s = typeDigit(s, 8);
     expect(missingCarries(s, c)).toEqual([]);
   });
@@ -95,7 +97,7 @@ describe('column texts', () => {
     const c = columnAdd(356, 127);
     let s = typeDigit(initialInput(c), 3);
     expect(coachLine(s, c)).toBe('Десятки: 5 + 2.');
-    s = typeDigit(focus(s, { kind: 'carry', place: 1 }), 1);
+    s = toggleCarry(s, 1);
     expect(coachLine(s, c)).toBe('Десятки: 5 + 2 і ще 1 зверху.');
   });
 

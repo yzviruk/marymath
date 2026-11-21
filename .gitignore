@@ -8,3 +8,4 @@ playwright-report/
 # Photos of the child's worksheets stay local (personal data).
 docs/worksheets/
 app/tsconfig.tsbuildinfo
+docs/Defects/

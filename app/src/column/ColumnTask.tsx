@@ -14,6 +14,7 @@ import {
   initialInput,
   missingBorrows,
   missingCarries,
+  toggleCarry,
   toggleCross,
   typeDigit,
   wrongPlaces,
@@ -128,7 +129,7 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
       setWrong([]);
       setJumpPlace(null);
       const reminders: string[] = [];
-      if (missingCarries(input, column).length) reminders.push('Не забувай писати 1 зверху, коли переносиш.');
+      if (missingCarries(input, column).length) reminders.push('Не забувай ставити 1 зверху, коли переносиш: торкнись кружечка.');
       if (missingBorrows(input, column).length) reminders.push('Позначай, звідки позичаєш: торкнись цифри зверху.');
       setSay(`Правильно! ${column.a} ${column.op} ${column.b} = ${column.result}. ${reminders.join(' ')}`.trim());
       return;
@@ -236,6 +237,7 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
             shakeKey={shakeKey}
             locked={!solving && !explaining}
             onCell={(cell) => solving && setInput((s) => focus(s, cell))}
+            onCarry={(p) => solving && setInput((s) => toggleCarry(s, p))}
             onCross={(p) => solving && setInput((s) => toggleCross(s, p))}
           />
           <div className="ct-pet">
