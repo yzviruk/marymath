@@ -72,6 +72,20 @@
       "w": 1280,
       "x": 2720,
       "y": 920
+    },
+    "Task.dc.html": {
+      "h": 800,
+      "title": "9 · Текстова задача ?2",
+      "w": 1280,
+      "x": 5440,
+      "y": 0
+    },
+    "Album.dc.html": {
+      "h": 800,
+      "title": "10 · Альбом наліпок",
+      "w": 1280,
+      "x": 5440,
+      "y": 920
     }
   },
   "createdOnFiles": {
@@ -97,7 +111,7 @@
     },
     "t-screens": {
       "kind": "title1",
-      "maxW": 5360,
+      "maxW": 6720,
       "text": "MaryMath — екрани для планшета 1280×800",
       "w": 240,
       "x": 0,
@@ -113,6 +127,8 @@
     "LevelDone.dc.html",
     "PetHome.dc.html",
     "Parent.dc.html",
+    "Task.dc.html",
+    "Album.dc.html",
     "Pet.dc.html",
     "NumberLine.dc.html"
   ],

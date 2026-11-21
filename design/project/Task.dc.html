@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Текстова задача</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; padding: 20px 24px; background: #EAF3FF; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <div style="height: 64px; display: flex; align-items: center; gap: 16px">
+    <a href="Map.dc.html" style="height: 52px; padding: 0 20px 0 14px; border-radius: 26px; background: #FFFFFF; display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 900; color: #4F5A78; text-decoration: none; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #4F5A78; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M15 5l-7 7 7 7"></path></svg>
+      Карта
+    </a>
+    <span style="font-size: 24px; font-weight: 900">Задачі · Рівень ?2 · Множення і ділення</span>
+    <div style="flex-grow: 1; display: flex; justify-content: center; gap: 8px" aria-label="Задача 3 з 10">
+      <sc-for list="{{dots}}" as="d" hint-placeholder-count="10">
+        <div style="width: {{d.w}}px; height: 14px; border-radius: 7px; background: {{d.bg}}"></div>
+      </sc-for>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 18px; border-radius: 26px; background: #FFFFFF; font-size: 22px; font-weight: 900; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#F5A524"></circle><circle cx="12" cy="12" r="6.5" fill="none" stroke="#FFD66B" stroke-width="2"></circle></svg>
+      152
+    </div>
+  </div>
+
+  <dc-import name="NumberLine" path="-" labels="none" hint-size="1232px,120px"></dc-import>
+
+  <div style="display: flex; gap: 24px; flex-grow: 1; min-height: 0">
+    <div style="flex-grow: 1; min-width: 0; box-sizing: border-box; border-radius: 28px; background: #FFFFFF; padding: 16px 28px 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 0 #D3E0F5">
+
+      <div style="display: flex; gap: 8px" aria-label="Кроки розв'язування">
+        <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+          <div style="height: 34px; padding: 0 14px 0 6px; border-radius: 17px; background: {{s.bg}}; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 900; color: {{s.fg}}">
+            <span style="width: 24px; height: 24px; border-radius: 12px; background: {{s.dot}}; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px">{{s.n}}</span>
+            {{s.label}}
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px">
+        <button type="button" aria-label="Прочитати задачу вголос" style="width: 52px; height: 52px; flex-shrink: 0; border-radius: 26px; border: 0; background: #F1EDFF; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #5B3FD6; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round"><path d="M4 9v6h4l5 4V5L8 9z"></path><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"></path></svg>
+        </button>
+        <p style="margin: 0; font-size: 25px; line-height: 34px; font-weight: 900">Оля розклала <span style="padding: 0 8px; border-radius: 10px; background: #F2F6FD; color: #A3AECB; border: 2px dashed #C9D6EE">15</span> наліпок порівну на <span style="padding: 0 8px; border-radius: 10px; background: #F2F6FD; color: #A3AECB; border: 2px dashed #C9D6EE">3</span> сторінки альбому. Скільки наліпок на кожній сторінці?</p>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: stretch">
+        <div style="flex-grow: 1; min-width: 0; border-radius: 20px; background: #F7F9FE; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">Малюнок до задачі</span>
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span style="width: 70px; font-size: 15px; font-weight: 800; color: #4F5A78; text-align: right">усього</span>
+            <div style="flex-grow: 1; height: 40px; border-radius: 12px; background: #E6E0FF; border: 3px solid #5B3FD6; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #3E27A3">15 наліпок</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px">
+            <span style="width: 70px; font-size: 15px; font-weight: 800; color: #4F5A78; text-align: right">сторінки</span>
+            <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px">
+              <div style="height: 40px; border-radius: 12px; background: #FFE9D4; border: 3px solid #E8770E; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #9A4508">?</div>
+              <div style="height: 40px; border-radius: 12px; background: #FFE9D4; border: 3px solid #E8770E; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #9A4508">?</div>
+              <div style="height: 40px; border-radius: 12px; background: #FFE9D4; border: 3px solid #E8770E; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #9A4508">?</div>
+            </div>
+          </div>
+          <span style="padding-left: 82px; font-size: 15px; font-weight: 800; color: #4F5A78">ціле поділили на 3 рівні частини</span>
+        </div>
+
+        <div style="width: 196px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">Яка дія?</span>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+            <sc-for list="{{signs}}" as="g" hint-placeholder-count="4">
+              <button type="button" aria-label="{{g.aria}}" aria-pressed="{{g.pressed}}" style="height: 64px; border-radius: 20px; border: 0; background: {{g.bg}}; box-shadow: 0 5px 0 {{g.shadow}}; font-family: inherit; font-size: 40px; line-height: 40px; font-weight: 900; color: {{g.fg}}; cursor: pointer">{{g.label}}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: flex-start; justify-content: center; gap: 14px">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 104px; height: 84px; box-sizing: border-box; border-radius: 20px; background: #E6E0FF; border: 3px solid #5B3FD6; display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: 900; color: #3E27A3">15</div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">скільки всього</span>
+        </div>
+        <span style="height: 84px; display: flex; align-items: center; font-size: 54px; font-weight: 900">:</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 104px; height: 84px; box-sizing: border-box; border-radius: 20px; background: #F2F6FD; border: 3px solid #8C9BC0; display: flex; align-items: center; justify-content: center; font-size: 54px; font-weight: 900">3</div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">скільки сторінок</span>
+        </div>
+        <span style="height: 84px; display: flex; align-items: center; font-size: 54px; font-weight: 900">=</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+          <div style="width: 104px; height: 84px; box-sizing: border-box; border-radius: 20px; background: #FFF3E6; border: 4px solid #E8770E; box-shadow: 0 0 0 6px #FFE3C7; display: flex; align-items: center; justify-content: center">
+            <div style="width: 5px; height: 50px; border-radius: 3px; background: #E8770E"></div>
+          </div>
+          <span style="font-size: 15px; font-weight: 800; color: #4F5A78">на одній сторінці</span>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; height: 50px; border-radius: 16px; background: #F7F9FE; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 22px; font-weight: 900; color: #A3AECB">
+        Відповідь: на кожній сторінці
+        <span style="width: 56px; height: 38px; border-radius: 10px; border: 3px dashed #C9D6EE; box-sizing: border-box"></span>
+        наліпок.
+      </div>
+    </div>
+
+    <div style="width: 324px; flex-shrink: 0; box-sizing: border-box; border-radius: 28px; background: #FFFFFF; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 6px 0 #D3E0F5">
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+        <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+          <button type="button" aria-label="{{k.aria}}" style="height: 80px; border-radius: 22px; border: 0; background: {{k.bg}}; box-shadow: 0 5px 0 {{k.shadow}}; font-family: inherit; font-size: 38px; font-weight: 900; color: #1E2440; cursor: pointer">{{k.label}}</button>
+        </sc-for>
+      </div>
+      <button type="button" style="margin-top: auto; height: 76px; border-radius: 38px; border: 0; background: #1E9E63; color: #FFFFFF; font-family: inherit; font-size: 26px; font-weight: 900; box-shadow: 0 6px 0 #137447; cursor: pointer">Перевірити</button>
+      <button type="button" style="height: 52px; border-radius: 26px; border: 3px solid #E3EAF7; background: #FFFFFF; color: #4F5A78; font-family: inherit; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #4F5A78; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z"></path></svg>
+        Підказка
+      </button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dots = Array.from({ length: 10 }, (_, i) => ({
+      w: i === 2 ? 36 : 14,
+      bg: i < 2 ? '#1E9E63' : (i === 2 ? '#5B3FD6' : '#C9D6EE')
+    }));
+    const done = { bg: '#E4F5EC', fg: '#137447', dot: '#1E9E63' };
+    const now = { bg: '#5B3FD6', fg: '#FFFFFF', dot: '#3E27A3' };
+    const todo = { bg: '#F2F6FD', fg: '#4F5A78', dot: '#A3AECB' };
+    const steps = [
+      Object.assign({ n: '1', label: 'Читаю' }, done),
+      Object.assign({ n: '2', label: 'Малюю' }, done),
+      Object.assign({ n: '3', label: 'Обираю дію' }, done),
+      Object.assign({ n: '4', label: 'Рахую і відповідаю' }, now)
+    ];
+    const signs = ['+', '−', '×', ':'].map((label) => {
+      const on = label === ':';
+      return {
+        label,
+        aria: { '+': 'Додати', '−': 'Відняти', '×': 'Помножити', ':': 'Поділити' }[label],
+        pressed: on ? 'true' : 'false',
+        bg: on ? '#5B3FD6' : '#F2F6FD',
+        shadow: on ? '#3E27A3' : '#D3DEF2',
+        fg: on ? '#FFFFFF' : '#1E2440'
+      };
+    });
+    const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    const keys = digits.map((d) => ({ label: d, aria: d, bg: '#F2F6FD', shadow: '#D3DEF2' }));
+    keys.push({ label: '⌫', aria: 'Стерти', bg: '#FFF0E6', shadow: '#F5D2B8' });
+    keys.push({ label: '0', aria: '0', bg: '#F2F6FD', shadow: '#D3DEF2' });
+    keys.push({ label: '↺', aria: 'Почати задачу знову', bg: '#F2F6FD', shadow: '#D3DEF2' });
+    return { dots, steps, signs, keys };
+  }
+}
+</script>
+</body>
+</html>
