@@ -30,6 +30,8 @@ export interface Profile {
   worn?: Partial<Record<'head' | 'ear' | 'eyes' | 'neck', string>>;
   /** Toys and room things the child put away. */
   hidden?: string[];
+  /** Islands a parent opened by hand: every level on them is open. */
+  openIslands?: string[];
   /** Stickers of the album (engine/stickers.ts): id → the day it was got (YYYY-MM-DD). */
   stickers?: Record<string, string>;
 }

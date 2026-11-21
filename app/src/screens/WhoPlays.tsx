@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CoinIcon, LockIcon, PlusIcon, StarIcon } from '../components/Icons';
 import { Pet } from '../components/Pet';
 import { createProfile, MAX_NAME_LENGTH, MAX_PROFILES, ProfileError } from '../data/profiles';
@@ -11,11 +11,13 @@ interface Props {
   onPick: (id: string) => void;
   onCreated: (p: Profile) => void | Promise<void>;
   onParent: () => void;
+  /** Open the new-profile form at once («+ Додати профіль» in the parent panel). */
+  initialCreate?: boolean;
 }
 
 /** Screen 1 «Хто грає?»: profile cards plus the new-profile form (mockup Main.dc.html). */
-export function WhoPlays({ profiles, onPick, onCreated, onParent }: Props) {
-  const [creating, setCreating] = useState(profiles.length === 0);
+export function WhoPlays({ profiles, onPick, onCreated, onParent, initialCreate }: Props) {
+  const [creating, setCreating] = useState(profiles.length === 0 || !!initialCreate);
   const canAdd = profiles.length < MAX_PROFILES;
   const compact = creating || profiles.length > 3;
 
@@ -26,10 +28,7 @@ export function WhoPlays({ profiles, onPick, onCreated, onParent }: Props) {
           <h1>Хто сьогодні грає?</h1>
           <p>{profiles.length ? 'Торкнися своєї картки' : 'Створімо твій профіль'}</p>
         </div>
-        <button type="button" className="chip-btn" onClick={onParent}>
-          <LockIcon />
-          Для батьків
-        </button>
+        <HoldButton onHold={onParent} />
       </header>
 
       <div className="who-body">
@@ -149,5 +148,57 @@ function NewProfileForm({
         Створити профіль
       </button>
     </form>
+  );
+}
+
+export const HOLD_MS = 1500;
+
+/** «Для батьків» opens only when held (a child tapping around does not get in). */
+function HoldButton({ onHold }: { onHold: () => void }) {
+  const [holding, setHolding] = useState(false);
+  const [hint, setHint] = useState(false);
+  const timer = useRef<number | null>(null);
+
+  function start() {
+    if (timer.current !== null) return;
+    setHolding(true);
+    setHint(false);
+    timer.current = window.setTimeout(() => {
+      timer.current = null;
+      setHolding(false);
+      onHold();
+    }, HOLD_MS);
+  }
+  function stop() {
+    if (timer.current === null) return;
+    window.clearTimeout(timer.current);
+    timer.current = null;
+    setHolding(false);
+    setHint(true);
+  }
+  useEffect(() => () => {
+    if (timer.current !== null) window.clearTimeout(timer.current);
+  }, []);
+
+  return (
+    <div className="who-parent">
+      <button
+        type="button"
+        className={`chip-btn who-hold${holding ? ' holding' : ''}`}
+        onPointerDown={start}
+        onPointerUp={stop}
+        onPointerLeave={stop}
+        onPointerCancel={stop}
+        onKeyDown={(e) => {
+          if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start();
+        }}
+        onKeyUp={stop}
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        <LockIcon />
+        Для батьків
+      </button>
+      {hint && <span className="who-hold-hint" role="status">Утримуйте кнопку</span>}
+    </div>
   );
 }

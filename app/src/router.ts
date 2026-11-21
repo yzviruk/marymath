@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 
 export type Route =
-  | { name: 'who' }
+  | { name: 'who'; create?: boolean }
   | { name: 'map'; profileId: string }
   | { name: 'level'; profileId: string; levelId: string }
   | { name: 'petHome'; profileId: string }
   | { name: 'album'; profileId: string }
+  | { name: 'gate' }
   | { name: 'parent' }
   | { name: 'levels' };
 

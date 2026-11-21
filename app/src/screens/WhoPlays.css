@@ -231,3 +231,39 @@
 .who-form .btn-primary {
   margin-top: auto;
 }
+
+.who-parent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.who-hold {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.who-hold::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 5px;
+  width: 0;
+  background: var(--accent);
+}
+.who-hold.holding::after {
+  width: 100%;
+  transition: width 1.5s linear;
+}
+.who-hold-hint {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--muted);
+}

@@ -89,13 +89,14 @@ const islandName = (id: IslandId) => ISLANDS.find((i) => i.id === id)!.name;
  */
 export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, onOpenAlbum }: Props) {
   const stars = profile.levelStars ?? {};
-  const next = continueLevel(stars, profile.lastLevel);
+  const opened = profile.openIslands ?? [];
+  const next = continueLevel(stars, profile.lastLevel, opened);
   const [say, setSay] = useState<string | null>(null);
-  const tasksOpen = tasksIslandOpen(stars);
+  const tasksOpen = tasksIslandOpen(stars) || (profile.openIslands ?? []).includes('tasks');
   const wear = wornIds(profile.worn);
 
   function tapLocked(l: LevelDef) {
-    const need = blockedBy(stars, l.id);
+    const need = blockedBy(stars, l.id, opened);
     setSay(
       need
         ? `Цей рівень відкриється, коли пройдеш ${levelName(need)} — 7 правильних з 10.`
@@ -108,7 +109,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, 
   /** A level on a path: passed with stars, the current one, open, or locked. */
   function node(l: LevelDef, x: number, y: number, current: LevelDef | null) {
     const s = stars[l.id] ?? 0;
-    const state = l === current ? 'current' : isPassed(stars, l.id) ? 'done' : isUnlocked(stars, l.id) ? 'open' : 'locked';
+    const state = l === current ? 'current' : isPassed(stars, l.id) ? 'done' : isUnlocked(stars, l.id, opened) ? 'open' : 'locked';
     const locked = state === 'locked';
     return (
       <div key={l.id} className={`map-node ${state}`} style={{ left: x - 32, top: y - (state === 'current' ? 29 : 26) }}>
@@ -179,7 +180,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, 
             const lay = LAYOUT[id];
             const art = ISLAND_ART[id];
             const levels = levelsOf(id);
-            const current = currentLevel(stars, id);
+            const current = currentLevel(stars, id, opened);
             const trail = 'M ' + lay.points.map((p) => p.join(' ')).join(' L ');
             const petHere = next && next.island === id ? petSpot(lay.points, levels.indexOf(next), lay.sign) : null;
             return (
@@ -216,7 +217,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, 
           <div className="map-tasks" data-island="tasks">
             <svg width="300" height="104" viewBox="0 0 300 104" aria-hidden="true" className="map-layer" dangerouslySetInnerHTML={{ __html: TASKS_ART }} />
             {tasksOpen ? (
-              levelsOf('tasks').map((l, i) => node(l, TASKS_POINTS[i][0], TASKS_POINTS[i][1], currentLevel(stars, 'tasks')))
+              levelsOf('tasks').map((l, i) => node(l, TASKS_POINTS[i][0], TASKS_POINTS[i][1], currentLevel(stars, 'tasks', opened)))
             ) : (
               <div className="map-tasks-text">
                 <b>

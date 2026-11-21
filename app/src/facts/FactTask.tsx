@@ -48,6 +48,7 @@ import {
 } from './texts';
 import { count, GROUP } from './words';
 import { taskCoins } from '../engine/rewards';
+import { useSettings } from '../SettingsContext';
 import '../column/ColumnTask.css';
 import './FactTask.css';
 
@@ -626,8 +627,9 @@ function lineOf(task: Task, model: Explanation) {
 }
 
 export function SpeakButton({ text }: { text: string }) {
+  const { speech } = useSettings();
   const can = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  if (!can) return null;
+  if (!can || !speech) return null;
   return (
     <button
       type="button"

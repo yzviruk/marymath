@@ -7,7 +7,10 @@ import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
 import { PetHome } from './screens/PetHome';
 import { StickerAlbum } from './screens/StickerAlbum';
-import { StubScreen } from './screens/StubScreen';
+import { ParentGate } from './screens/ParentGate';
+import { ParentPanel } from './screens/ParentPanel';
+import { DEFAULT_SETTINGS, getSettings, saveSettings, type Settings } from './data/parent';
+import { SettingsContext } from './SettingsContext';
 import { LevelRun } from './screens/LevelRun';
 import { WhoPlays } from './screens/WhoPlays';
 import { Stage } from './Stage';
@@ -17,8 +20,10 @@ export function App() {
   const [profiles, setProfiles] = useState<Profile[] | null>(null);
 
   const reload = useCallback(async () => setProfiles(await listProfiles()), []);
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   useEffect(() => {
     void reload();
+    void getSettings().then(setSettings);
   }, [reload]);
 
   const profile = 'profileId' in route ? profiles?.find((p) => p.id === route.profileId) : undefined;
@@ -29,7 +34,7 @@ export function App() {
     screen = null; // first IndexedDB read takes a few ms
   } else if ('profileId' in route && !profile) {
     // e.g. a profile deleted while its screen was in history
-    screen = <WhoPlays profiles={profiles} onPick={toMap} onCreated={reload} onParent={() => go({ name: 'parent' })} />;
+    screen = <WhoPlays profiles={profiles} onPick={toMap} onCreated={reload} onParent={() => go({ name: 'gate' })} />;
   } else {
     switch (route.name) {
       case 'who':
@@ -41,7 +46,8 @@ export function App() {
               await reload();
               toMap(p.id);
             }}
-            onParent={() => go({ name: 'parent' })}
+            onParent={() => go({ name: 'gate' })}
+            initialCreate={route.create}
           />
         );
         break;
@@ -76,14 +82,21 @@ export function App() {
       case 'album':
         screen = <StickerAlbum profile={profile!} onBack={back} onChanged={reload} />;
         break;
+      case 'gate':
+        screen = <ParentGate onPass={() => reset({ name: 'parent' })} onBack={back} />;
+        break;
       case 'parent':
         screen = (
-          <StubScreen
-            title="Панель батьків"
-            text="Тут будуть PIN, профілі, статистика і резервна копія (етап 6). Уже зараз можна переглянути приклади кожного рівня."
-            backLabel="Хто грає?"
-            onBack={back}
-            action={{ label: 'Приклади рівнів', onClick: () => go({ name: 'levels' }) }}
+          <ParentPanel
+            profiles={profiles}
+            onExit={() => reset({ name: 'who' })}
+            onAddProfile={() => reset({ name: 'who', create: true })}
+            onPreview={() => go({ name: 'levels' })}
+            onChanged={reload}
+            onSettings={async (patch) => {
+              setSettings((s) => ({ ...s, ...patch }));
+              await saveSettings(patch);
+            }}
           />
         );
         break;
@@ -94,9 +107,11 @@ export function App() {
   }
 
   return (
-    <Stage>
-      {screen}
-      <UpdatePrompt />
-    </Stage>
+    <SettingsContext.Provider value={settings}>
+      <Stage>
+        {screen}
+        <UpdatePrompt />
+      </Stage>
+    </SettingsContext.Provider>
   );
 }
