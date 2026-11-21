@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { CoinIcon, StarIcon } from '../components/Icons';
 import { Pet } from '../components/Pet';
 import type { Profile } from '../data/types';
-import { LEVELS } from '../engine/levels';
+import { ISLANDS, type LevelDef } from '../engine/levels';
+import { blockedBy, continueLevel, currentLevel, isPassed, isUnlocked, levelsOf, passedCount, tasksIslandOpen } from '../engine/progress';
 import type { IslandId } from '../engine/types';
+import { ISLAND_ART, SEA_ART, TASKS_ART } from './mapArt';
 import './MapScreen.css';
 
 interface Props {
@@ -12,81 +15,223 @@ interface Props {
   onOpenPetHome: () => void;
 }
 
-const ISLANDS: { id: IslandId | 'tasks'; name: string; theme: string; sign: string; color: string; bg: string; ready: boolean }[] = [
-  { id: 'add', name: 'Додавання', theme: 'ліс', sign: '+', color: '#2E9C5B', bg: '#DDF5E5', ready: true },
-  { id: 'sub', name: 'Віднімання', theme: 'пустеля', sign: '−', color: '#C9822B', bg: '#FCEBD2', ready: true },
-  { id: 'mul', name: 'Множення', theme: 'цукерки', sign: '×', color: '#D6457E', bg: '#FDE2EE', ready: true },
-  { id: 'div', name: 'Ділення', theme: 'кристали', sign: ':', color: '#2F6FED', bg: '#DFEAFE', ready: true },
-  { id: 'tasks', name: 'Задачі', theme: 'замок', sign: '♛', color: '#5B3FD6', bg: '#ECE7FF', ready: false },
-];
+type ActionIsland = 'add' | 'sub' | 'mul' | 'div';
+
+/** Where each island sits on the sea, its sign post and the path points of its levels (from the mockup). */
+const LAYOUT: Record<ActionIsland, { left: number; top: number; sign: [number, number, number]; points: [number, number][] }> = {
+  add: {
+    left: 16,
+    top: 8,
+    sign: [6, 0, -3],
+    points: [[100, 104], [162, 92], [224, 100], [286, 92], [296, 180], [234, 188], [172, 184], [110, 188]],
+  },
+  sub: {
+    left: 456,
+    top: 0,
+    sign: [206, 0, 2],
+    points: [[96, 106], [156, 94], [216, 102], [276, 96], [262, 184], [196, 188]],
+  },
+  mul: {
+    left: 24,
+    top: 284,
+    sign: [10, 4, -2],
+    points: [[104, 100], [164, 90], [226, 96], [288, 92], [300, 178], [238, 186], [176, 182]],
+  },
+  div: {
+    left: 460,
+    top: 278,
+    sign: [216, 6, 3],
+    points: [[104, 104], [164, 92], [226, 100], [288, 96], [262, 182], [196, 186]],
+  },
+};
+
+const PET = 46;
 
 /**
- * Temporary map (the island map with paths comes in stage 5): for the first try every level of
- * the four islands is open; the unlock rules (Ділення after ×2 …) come with the real map.
+ * A spot for the pet next to the current level: right of it as in the mockup, else left, below
+ * or above — the one that covers the least of other levels and the sign post.
+ */
+function petSpot(points: [number, number][], at: number, sign: [number, number, number]): [number, number] {
+  const [x, y] = points[at];
+  const busy = [
+    ...points.filter((_, i) => i !== at).map(([px, py]) => [px - 28, py - 28, px + 28, py + 44]),
+    [sign[0], sign[1], sign[0] + 240, sign[1] + 62],
+  ];
+  const covered = ([l, t]: [number, number]) =>
+    busy.reduce((sum, [a, b, c, d]) => sum + Math.max(0, Math.min(l + PET, c) - Math.max(l, a)) * Math.max(0, Math.min(t + PET, d) - Math.max(t, b)), 0);
+  const spots: [number, number][] = [
+    [x + 30, y - 40],
+    [x - 30 - PET, y - 40],
+    [x + 30, y - 10],
+    [x - 30 - PET, y - 10],
+    [x - PET / 2, y + 32],
+    [x - PET / 2, y - 32 - PET],
+  ].filter(([l, t]) => l >= 0 && t >= 0 && l + PET <= 400 && t + PET <= 260) as [number, number][];
+  return spots.reduce((best, s) => (covered(s) < covered(best) ? s : best));
+}
+
+const label = (l: LevelDef) => (l.boss ? '♛' : l.id);
+const levelName = (l: LevelDef) => (l.boss ? 'бос острова' : `рівень ${l.id}`);
+const islandName = (id: IslandId) => ISLANDS.find((i) => i.id === id)!.name;
+
+/**
+ * The island map: four islands with paths of levels, the Задачі castle, «Продовжити».
+ * Opening rules live in engine/progress.ts.
  */
 export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }: Props) {
   const stars = profile.levelStars ?? {};
+  const next = continueLevel(stars, profile.lastLevel);
+  const [say, setSay] = useState<string | null>(null);
+  const tasksOpen = tasksIslandOpen(stars);
+
+  function tapLocked(l: LevelDef) {
+    const need = blockedBy(stars, l.id);
+    setSay(need ? `Цей рівень відкриється, коли пройдеш ${levelName(need)} — 7 правильних з 10.` : null);
+  }
+
   return (
     <div className="screen map">
-      <div className="topbar">
-        <button type="button" className="chip-btn map-who" onClick={onSwitchChild} aria-label="Змінити гравця">
-          <Pet kind={profile.pet} size={40} label="" />
-          {profile.name}
+      <h1 className="sr-only">Карта островів</h1>
+      <div className="map-top">
+        <button type="button" className="map-who" onClick={onSwitchChild} aria-label="Змінити гравця">
+          <Pet kind={profile.pet} size={54} label="" />
         </button>
-        <span className="topbar-title map-title">Карта островів</span>
-        <span className="coins" aria-label={`Зірки: ${profile.stars}`}>
-          <StarIcon size={24} />
-          {profile.stars}
+        <span className="map-name">{profile.name}</span>
+        <span className="map-grow" />
+        <span className="map-chip" aria-label={`Зірки: ${profile.stars}`}>
+          <StarIcon size={26} />
+          <b>{profile.stars}</b>
+          <span>зірок</span>
         </span>
-        <span className="coins">
-          <CoinIcon />
-          {profile.coins}
+        <span className="map-chip coins">
+          <CoinIcon size={26} />
+          <b>{profile.coins}</b>
+          <span>монеток</span>
         </span>
+        <button type="button" className="map-home" onClick={onOpenPetHome}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11l9-7 9 7" />
+            <path d="M5 10v10h14V10" />
+            <path d="M10 20v-5h4v5" />
+          </svg>
+          Будиночок
+        </button>
       </div>
 
-      <ul className="map-islands">
-        {ISLANDS.map((isl) => (
-          <li key={isl.id} style={{ background: isl.bg }} className={isl.ready ? 'ready' : ''}>
-            <div className="map-head">
-              <span className="map-sign" style={{ color: isl.color }}>
-                {isl.sign}
-              </span>
-              <span className="map-name">{isl.name}</span>
-            </div>
-            {isl.ready ? (
-              <div className="map-levels">
-                {LEVELS.filter((l) => l.island === isl.id).map((l) => (
-                  <button
-                    key={l.id}
-                    type="button"
-                    className={`map-level${l.boss ? ' boss' : ''}`}
-                    onClick={() => onOpenLevel(l.id)}
-                    aria-label={`Рівень ${l.id}${stars[l.id] ? `, зірок: ${stars[l.id]}` : ''}`}
-                    style={{ color: isl.color }}
-                  >
-                    {l.boss ? '♛' : l.id}
-                    <span className="map-level-stars" aria-hidden="true">
-                      {'★'.repeat(stars[l.id] ?? 0)}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <span className="map-theme">{isl.theme} · скоро</span>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className="map-body">
+        <div className="map-sea">
+          <svg width="880" height="644" viewBox="0 0 880 644" aria-hidden="true" className="map-layer" dangerouslySetInnerHTML={{ __html: SEA_ART }} />
 
-      <div className="map-bottom">
-        <div className="map-pet">
-          <Pet kind={profile.pet} size={110} label={profile.petName} />
-          <div className="bubble">Привіт, {profile.name}! Обери острів і рівень.</div>
+          {(Object.keys(LAYOUT) as ActionIsland[]).map((id) => {
+            const lay = LAYOUT[id];
+            const art = ISLAND_ART[id];
+            const levels = levelsOf(id);
+            const current = currentLevel(stars, id);
+            const trail = 'M ' + lay.points.map((p) => p.join(' ')).join(' L ');
+            const petHere = next && next.island === id ? petSpot(lay.points, levels.indexOf(next), lay.sign) : null;
+            return (
+              <div key={id} className="map-island" style={{ left: lay.left, top: lay.top }} data-island={id}>
+                <svg width="400" height="260" viewBox="0 0 400 260" aria-hidden="true" className="map-layer">
+                  <g dangerouslySetInnerHTML={{ __html: art.under }} />
+                  <path d={trail} fill="none" stroke={art.trail[0]} strokeWidth="22" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={trail} fill="none" stroke={art.trail[1]} strokeWidth="15" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={trail} fill="none" stroke={art.trail[2]} strokeWidth="3" strokeDasharray="6 10" strokeLinecap="round" strokeLinejoin="round" />
+                  <g dangerouslySetInnerHTML={{ __html: art.over }} />
+                </svg>
+
+                {levels.map((l, i) => {
+                  const [x, y] = lay.points[i];
+                  const s = stars[l.id] ?? 0;
+                  const state = l === current ? 'current' : isPassed(stars, l.id) ? 'done' : isUnlocked(stars, l.id) ? 'open' : 'locked';
+                  const locked = state === 'locked';
+                  return (
+                    <div key={l.id} className={`map-node ${state}`} style={{ left: x - 32, top: y - (state === 'current' ? 29 : 26) }}>
+                      <button
+                        type="button"
+                        className="map-level"
+                        aria-label={`Рівень ${l.id}${s ? `, зірок: ${s}` : ''}${locked ? ', закрито' : ''}`}
+                        onClick={() => (locked ? tapLocked(l) : onOpenLevel(l.id))}
+                      >
+                        {locked && (
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="10" rx="3" />
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                          </svg>
+                        )}
+                        {label(l)}
+                      </button>
+                      {state === 'done' && (
+                        <span className="map-stars" aria-hidden="true">
+                          {'★'.repeat(s) + '☆'.repeat(3 - s)}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {petHere && (
+                  <div className="map-pet-here" style={{ left: petHere[0], top: petHere[1] }}>
+                    <Pet kind={profile.pet} size={PET} label="" />
+                  </div>
+                )}
+
+                <div className="map-sign" style={{ left: lay.sign[0], top: lay.sign[1] }}>
+                  <div style={{ transform: `rotate(${lay.sign[2]}deg)` }}>
+                    {islandName(id)}
+                    <span>
+                      {passedCount(stars, id)} / {levels.length}
+                    </span>
+                  </div>
+                  <i />
+                </div>
+              </div>
+            );
+          })}
+
+          <div className="map-tasks">
+            <svg width="300" height="104" viewBox="0 0 300 104" aria-hidden="true" className="map-layer" dangerouslySetInnerHTML={{ __html: TASKS_ART }} />
+            <div className="map-tasks-text">
+              <b>
+                {!tasksOpen && (
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="11" width="14" height="10" rx="3" />
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                  </svg>
+                )}
+                Острів Задачі
+              </b>
+              <span>{tasksOpen ? 'скоро відкриється' : 'після всіх чотирьох босів'}</span>
+            </div>
+          </div>
         </div>
-        <div className="map-actions">
-          <button type="button" className="map-home" onClick={onOpenPetHome}>
-            Будиночок
-          </button>
+
+        <div className="map-side">
+          {next ? (
+            <div className="map-continue">
+              <span className="map-continue-head">Продовжити</span>
+              <b>
+                {islandName(next.island)} · {next.boss ? 'Бос острова' : `Рівень ${next.id}`}
+              </b>
+              <span>{next.title}</span>
+              <button type="button" onClick={() => onOpenLevel(next.id)}>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 4l13 8-13 8z" />
+                </svg>
+                Грати
+              </button>
+            </div>
+          ) : (
+            <div className="map-continue">
+              <span className="map-continue-head">Усі острови пройдено!</span>
+              <b>Можна перепройти будь-який рівень і зібрати всі зірки.</b>
+            </div>
+          )}
+          <div className="map-buddy">
+            <div className="bubble" role="status">
+              {say ?? `Привіт, ${profile.name}! ${next ? 'Тисни «Грати» або обери рівень на карті.' : 'Ти молодець!'}`}
+            </div>
+            <Pet kind={profile.pet} size={130} label={profile.petName} />
+          </div>
         </div>
       </div>
     </div>

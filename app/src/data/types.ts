@@ -22,6 +22,8 @@ export interface Profile {
   coins: number;
   /** Best stars (0–3) per level id, e.g. { '+3': 2 }. */
   levelStars?: Record<string, number>;
+  /** The level finished last — «Продовжити» on the map stays on its island. */
+  lastLevel?: string;
 }
 
 /** One press of «Перевірити». */

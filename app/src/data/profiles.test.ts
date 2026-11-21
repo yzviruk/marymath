@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { resetDbForTests } from './db';
-import { createProfile, deleteProfile, listProfiles, MAX_PROFILES, ProfileError, updateProfile } from './profiles';
+import { createProfile, deleteProfile, listProfiles, MAX_PROFILES, ProfileError, recordLevelStars, updateProfile } from './profiles';
 
 beforeEach(async () => {
   await resetDbForTests();
@@ -39,5 +39,15 @@ describe('profiles', () => {
     expect((await updateProfile(p.id, { petName: 'Зефір' })).petName).toBe('Зефір');
     await deleteProfile(p.id);
     expect(await listProfiles()).toEqual([]);
+  });
+
+  it('keeps the best stars per level and remembers the last level', async () => {
+    const p = await createProfile({ name: 'Марія', pet: 'cat' });
+    await recordLevelStars(p.id, '+1', 3);
+    const q = await recordLevelStars(p.id, '+1', 1);
+    expect(q.levelStars).toEqual({ '+1': 3 });
+    const r = await recordLevelStars(p.id, '×1', 0);
+    expect(r.stars).toBe(3);
+    expect(r.lastLevel).toBe('×1');
   });
 });

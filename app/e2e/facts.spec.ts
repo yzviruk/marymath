@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { unlockLevel } from './unlock';
 
 async function createProfile(page: Page, name = 'Марія') {
   await page.goto('./');
@@ -9,6 +10,7 @@ async function createProfile(page: Page, name = 'Марія') {
 }
 
 async function openLevel(page: Page, id: string) {
+  await unlockLevel(page, id);
   await page.getByRole('button', { name: new RegExp(`^Рівень ${id}(,|$)`) }).click();
   await expect(page.getByRole('group', { name: /^Приклад:/ })).toBeVisible();
 }
@@ -28,11 +30,17 @@ function solve(text: string): number {
   return op === '×' ? Number(a) * Number(b) : Number(a) / Number(b);
 }
 
-test('× and : islands are open for the first try', async ({ page }) => {
+test('a new child has the first level of every island open, the rest locked', async ({ page }) => {
   await createProfile(page);
-  for (const id of ['×1', '×6', ':1', ':5']) {
-    await expect(page.getByRole('button', { name: `Рівень ${id}` })).toBeVisible();
+  for (const id of ['+1', '−1', '×1', ':1']) {
+    await expect(page.getByRole('button', { name: `Рівень ${id}`, exact: true })).toBeVisible();
   }
+  for (const id of ['+2', '×6', ':5', ':♛']) {
+    await expect(page.getByRole('button', { name: `Рівень ${id}, закрито` })).toBeVisible();
+  }
+  await page.getByRole('button', { name: 'Рівень ×2, закрито' }).click();
+  await expect(page.getByRole('status')).toHaveText('Цей рівень відкриється, коли пройдеш рівень ×1 — 7 правильних з 10.');
+  await expect(page.getByLabel(/^Приклад/)).toHaveCount(0); // still on the map
 });
 
 test('×1: equal groups → repeated addition, two boxes', async ({ page }) => {

@@ -79,7 +79,7 @@ export async function addCoins(id: string, coins: number): Promise<Profile> {
   return p;
 }
 
-/** Keeps the best stars of a level and recomputes the total. */
+/** Keeps the best stars of a level, recomputes the total and remembers the level as the last one. */
 export async function recordLevelStars(id: string, level: string, stars: number): Promise<Profile> {
   const db = await getDb();
   const tx = db.transaction('profiles', 'readwrite');
@@ -89,6 +89,7 @@ export async function recordLevelStars(id: string, level: string, stars: number)
   levelStars[level] = Math.max(levelStars[level] ?? 0, stars);
   p.levelStars = levelStars;
   p.stars = Object.values(levelStars).reduce((s, n) => s + n, 0);
+  p.lastLevel = level;
   await tx.store.put(p);
   await tx.done;
   return p;

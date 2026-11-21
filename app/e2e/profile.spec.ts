@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { unlockLevel } from './unlock';
 
 async function createProfile(page: Page, name = 'Марія') {
   await page.goto('./');
@@ -9,6 +10,7 @@ async function createProfile(page: Page, name = 'Марія') {
 }
 
 async function openLevel(page: Page, id: string) {
+  await unlockLevel(page, id);
   await page.getByRole('button', { name: new RegExp(`^Рівень ${id.replace('+', '\\+')}(,|$)`) }).click();
   await expect(page.getByLabel(/^Приклад у стовпчик/)).toBeVisible();
 }
@@ -178,19 +180,26 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
 });
 
-test('map: all five islands fit inside the 1280×800 stage', async ({ page }) => {
+test('map: islands fit the sea, passing a level opens the next, «Продовжити» leads on', async ({ page }) => {
   await createProfile(page);
-  const grid = page.locator('.map-islands');
-  const [client, scroll] = await grid.evaluate((g) => [g.clientWidth, g.scrollWidth]);
-  expect(scroll).toBeLessThanOrEqual(client);
-  const stage = await page.locator('.stage').boundingBox();
-  const islands = page.locator('.map-islands li');
-  await expect(islands).toHaveCount(5);
-  for (let i = 0; i < 5; i++) {
-    const box = (await islands.nth(i).boundingBox())!;
-    expect(box.x + box.width).toBeLessThanOrEqual(stage!.x + stage!.width);
+  const sea = (await page.locator('.map-sea').boundingBox())!;
+  for (const node of await page.locator('.map-node').all()) {
+    const b = (await node.boundingBox())!;
+    expect(b.x).toBeGreaterThanOrEqual(sea.x);
+    expect(b.y).toBeGreaterThanOrEqual(sea.y);
+    expect(b.x + b.width).toBeLessThanOrEqual(sea.x + sea.width);
+    expect(b.y + b.height).toBeLessThanOrEqual(sea.y + sea.height);
   }
-  await expect(page.getByRole('button', { name: 'Рівень :4' })).toBeInViewport({ ratio: 1 });
+  await expect(page.locator('[data-island="add"] .map-sign')).toContainText('0 / 8');
+  await expect(page.getByText('після всіх чотирьох босів')).toBeVisible();
+
+  await page.locator('.map-continue').getByRole('button', { name: 'Грати' }).click();
+  await expect(page.getByText('Додавання · Рівень +1')).toBeVisible();
+  for (let i = 0; i < 10; i++) await solveCurrent(page);
+  await page.getByRole('button', { name: 'Карта' }).click();
+  await expect(page.getByRole('button', { name: 'Рівень +2', exact: true })).toBeVisible();
+  await expect(page.locator('[data-island="add"] .map-sign')).toContainText('1 / 8');
+  await expect(page.locator('.map-continue')).toContainText('Додавання · Рівень +2');
 });
 
 test('PWA manifest is served',async ({ request }) => {
