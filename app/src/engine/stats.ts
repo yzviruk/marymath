@@ -36,9 +36,14 @@ export function localDay(d: Date): string {
 const within = (list: StatAttempt[], now: Date, days: number) =>
   list.filter((x) => now.getTime() - new Date(x.at).getTime() < days * DAY);
 
-function islandOf(level: string): IslandId | null {
+/** Levels outside the islands: the garden watering and the blitz (× and : facts). */
+export const GARDEN_LEVEL = 'garden';
+export const BLITZ_LEVEL = 'blitz';
+
+function islandOf(x: Pick<StatAttempt, 'level' | 'op'>): IslandId | null {
+  if (x.level === GARDEN_LEVEL || x.level === BLITZ_LEVEL) return x.op === ':' ? 'div' : 'mul';
   try {
-    return getLevel(level).island;
+    return getLevel(x.level).island;
   } catch {
     return null;
   }
@@ -57,7 +62,7 @@ export interface TopicStat {
 export function topicAccuracy(list: StatAttempt[], now: Date, days = 7): TopicStat[] {
   const firsts = within(list, now, days).filter((x) => x.tryNo === 1);
   return ISLANDS.map(({ id, name }) => {
-    const mine = firsts.filter((x) => islandOf(x.level) === id);
+    const mine = firsts.filter((x) => islandOf(x) === id);
     const right = mine.filter((x) => x.correct).length;
     return { island: id, name, right, total: mine.length, pct: mine.length ? Math.round((right / mine.length) * 100) : null };
   });
@@ -108,7 +113,7 @@ export function topErrors(list: StatAttempt[], now: Date, days = 30, limit = 4):
 export type FactStatus = 'known' | 'learning' | 'wrong' | 'new';
 
 /** The unordered pair of a × or : attempt: 6 × 4 and 24 : 6 and 24 : 4 are one fact. */
-function factPair(x: StatAttempt): [number, number] | null {
+export function factPair(x: Pick<StatAttempt, 'op' | 'a' | 'b' | 'stage'>): [number, number] | null {
   if (x.stage === 'setup') return null;
   if (x.op === '×') return x.a <= x.b ? [x.a, x.b] : [x.b, x.a];
   if (x.op === ':' && x.b && Number.isInteger(x.a / x.b)) {
@@ -117,13 +122,25 @@ function factPair(x: StatAttempt): [number, number] | null {
   }
   return null;
 }
-const pairKey = (p: number, q: number) => (p <= q ? `${p}×${q}` : `${q}×${p}`);
+export const pairKey = (p: number, q: number) => (p <= q ? `${p}×${q}` : `${q}×${p}`);
+
+/** Right first tries in a row on this many different days make a fact known. */
+export const KNOWN_DAYS = 3;
+
+export interface FactProgress {
+  status: FactStatus;
+  /** Different days in the run of right first tries going on now (0 after a mistake), up to 3. */
+  days: number;
+  /** The day of the last first try. */
+  lastDay: string;
+}
 
 /**
- * known — the last 3 first tries right, on 3 different days; wrong — the last first try wrong;
- * learning — tried, in between; new — never tried.
+ * known — right first tries in a row (no mistake between) on 3 different days; a second right
+ * answer on the same day neither helps nor hurts. wrong — the last first try wrong;
+ * learning — tried, in between; new — never tried (absent from the map).
  */
-export function factStatuses(list: StatAttempt[]): Map<string, FactStatus> {
+export function factProgress(list: StatAttempt[]): Map<string, FactProgress> {
   const byFact = new Map<string, StatAttempt[]>();
   for (const x of [...list].sort((p, q) => p.at.localeCompare(q.at))) {
     if (x.tryNo !== 1) continue;
@@ -132,18 +149,20 @@ export function factStatuses(list: StatAttempt[]): Map<string, FactStatus> {
     const k = pairKey(...pair);
     byFact.set(k, [...(byFact.get(k) ?? []), x]);
   }
-  const out = new Map<string, FactStatus>();
+  const out = new Map<string, FactProgress>();
   for (const [k, xs] of byFact) {
-    const last = xs[xs.length - 1];
-    if (!last.correct) {
-      out.set(k, 'wrong');
-      continue;
-    }
-    const tail = xs.slice(-3);
-    const days = new Set(tail.map((x) => localDay(new Date(x.at))));
-    out.set(k, tail.length === 3 && tail.every((x) => x.correct) && days.size === 3 ? 'known' : 'learning');
+    const lastDay = localDay(new Date(xs[xs.length - 1].at));
+    let run = xs.length;
+    while (run > 0 && xs[run - 1].correct) run--;
+    const days = Math.min(KNOWN_DAYS, new Set(xs.slice(run).map((x) => localDay(new Date(x.at)))).size);
+    const status: FactStatus = days === 0 ? 'wrong' : days >= KNOWN_DAYS ? 'known' : 'learning';
+    out.set(k, { status, days, lastDay });
   }
   return out;
+}
+
+export function factStatuses(list: StatAttempt[]): Map<string, FactStatus> {
+  return new Map([...factProgress(list)].map(([k, p]) => [k, p.status]));
 }
 
 export interface FactCell {

@@ -6,6 +6,9 @@ export type Route =
   | { name: 'level'; profileId: string; levelId: string }
   | { name: 'petHome'; profileId: string }
   | { name: 'album'; profileId: string }
+  | { name: 'garden'; profileId: string }
+  | { name: 'gardenRun'; profileId: string }
+  | { name: 'blitz'; profileId: string }
   | { name: 'gate' }
   | { name: 'parent' }
   | { name: 'levels' };

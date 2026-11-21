@@ -287,15 +287,26 @@ a{color:#5B3FD6}a:hover{color:#4428B8}
 
       <div style="border-radius: 28px; background: #FFFFFF; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 6px 0 #D3E0F5">
         <span style="font-size: 16px; font-weight: 800; color: #4F5A78">Серія</span>
-        <span style="font-size: 21px; font-weight: 900">5 днів поспіль</span>
+        <span style="font-size: 21px; font-weight: 900">5 днів із завданням дня</span>
         <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
           <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
             <div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
-              <div style="width: 30px; height: 30px; border-radius: 15px; background: {{d.bg}}; border: 3px solid {{d.ring}}; box-sizing: border-box"></div>
+              <div style="width: 30px; height: 30px; border-radius: 15px; background: {{d.bg}}; border: 3px {{d.line}} {{d.ring}}; box-sizing: border-box"></div>
               <span style="font-size: 13px; font-weight: 800; color: #4F5A78">{{d.day}}</span>
             </div>
           </sc-for>
         </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <a href="Garden.dc.html" style="height: 64px; border-radius: 22px; background: #FFFFFF; color: #137447; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-shadow: 0 5px 0 #CFE6C4">
+          <svg width="26" height="26" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72V40" stroke="#3E9B4F" stroke-width="6"></path><g fill="#E0508E"><circle cx="32" cy="16" r="12"></circle><circle cx="46" cy="30" r="12"></circle><circle cx="18" cy="30" r="12"></circle><circle cx="32" cy="42" r="12"></circle></g><circle cx="32" cy="29" r="9" fill="#FFD34D"></circle></svg>
+          Садочок
+        </a>
+        <a href="Blitz.dc.html" style="height: 64px; border-radius: 22px; background: #FFFFFF; color: #3E27A3; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-shadow: 0 5px 0 #D3E0F5">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="fill: #F5A524; stroke: #C98A00; stroke-width: 1.6; stroke-linejoin: round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg>
+          Бліц
+        </a>
       </div>
     </div>
   </div>
@@ -333,7 +344,15 @@ class Component extends DCLogic {
       [[104, 104], [164, 92], [226, 100], [288, 96], [262, 182], [196, 186]],
       [3, 1], 2);
     const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
-    const week = days.map((day, i) => ({ day, bg: i < 5 ? '#FFB43C' : '#FFFFFF', ring: i < 5 ? '#FFB43C' : '#C9D6EE' }));
+    // Mon, Tue done; Wed missed (a pause, the streak keeps); Thu, Fri done; Sat today, waiting; Sun ahead.
+    const look = {
+      done: { bg: '#FFB43C', ring: '#FFB43C', line: 'solid' },
+      pause: { bg: '#F2F6FD', ring: '#C9D6EE', line: 'dashed' },
+      today: { bg: '#FFFFFF', ring: '#5B3FD6', line: 'solid' },
+      ahead: { bg: '#FFFFFF', ring: '#E1E8F4', line: 'solid' }
+    };
+    const states = ['done', 'done', 'pause', 'done', 'done', 'today', 'ahead'];
+    const week = days.map((day, i) => ({ day, ...look[states[i]] }));
     return { add, sub, mul, div, week };
   }
 }

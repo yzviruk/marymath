@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CoinIcon, StarIcon } from '../components/Icons';
+import { BED_COLORS, FlowerArt } from '../components/FlowerArt';
+import { dayTaskState, openDayGift } from '../data/daily';
 import { Pet } from '../components/Pet';
 import type { Profile } from '../data/types';
 import { ISLANDS, type LevelDef } from '../engine/levels';
 import { blockedBy, continueLevel, currentLevel, isPassed, isUnlocked, levelsOf, passedCount, tasksIslandOpen } from '../engine/progress';
 import type { IslandId } from '../engine/types';
 import { wornIds } from '../engine/shop';
+import { BLITZ_UNLOCK, blitzOpen } from '../engine/blitz';
+import { DAY_GIFT_COINS, streak, type DayTaskDef } from '../engine/daily';
+import { plural } from '../facts/words';
+import { localDay } from '../engine/stats';
+import { playSfx } from '../sound/sound';
 import { ISLAND_ART, SEA_ART, TASKS_ART } from './mapArt';
 import './MapScreen.css';
 
@@ -15,6 +22,10 @@ interface Props {
   onOpenLevel: (levelId: string) => void;
   onOpenPetHome: () => void;
   onOpenAlbum: () => void;
+  onOpenGarden: () => void;
+  onOpenBlitz: () => void;
+  /** After the day gift was opened (coins changed). */
+  onChanged: () => void | Promise<void>;
   music: boolean;
   onToggleMusic: () => void;
 }
@@ -89,13 +100,47 @@ const islandName = (id: IslandId) => ISLANDS.find((i) => i.id === id)!.name;
  * The island map: four islands with paths of levels, the Задачі castle, «Продовжити».
  * Opening rules live in engine/progress.ts.
  */
-export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, onOpenAlbum, music, onToggleMusic }: Props) {
+const DAYS = ['день', 'дні', 'днів'] as const;
+const STREAK_STATE = { done: 'завдання виконано', pause: 'пауза', today: 'сьогодні', ahead: 'без завдання' } as const;
+
+export function MapScreen({
+  profile,
+  onSwitchChild,
+  onOpenLevel,
+  onOpenPetHome,
+  onOpenAlbum,
+  onOpenGarden,
+  onOpenBlitz,
+  onChanged,
+  music,
+  onToggleMusic,
+}: Props) {
   const stars = profile.levelStars ?? {};
   const opened = profile.openIslands ?? [];
   const next = continueLevel(stars, profile.lastLevel, opened);
   const [say, setSay] = useState<string | null>(null);
   const tasksOpen = tasksIslandOpen(stars) || (profile.openIslands ?? []).includes('tasks');
   const wear = wornIds(profile.worn);
+  const [day, setDay] = useState<{ def: DayTaskDef; have: number; done: boolean; opened: boolean } | null>(null);
+  const week = streak(profile.dayGifts ?? [], new Date(), localDay(new Date(profile.createdAt)));
+  const canBlitz = blitzOpen(stars, opened);
+
+  useEffect(() => {
+    let alive = true;
+    void dayTaskState(profile).then((s) => alive && setDay(s));
+    return () => {
+      alive = false;
+    };
+  }, [profile]);
+
+  async function openGift() {
+    const { coins } = await openDayGift(profile.id);
+    if (coins) {
+      playSfx('coin');
+      setSay(`${profile.petName} відкриває подарунок… ${coins} монеток! Дякую!`);
+    }
+    await onChanged();
+  }
 
   function tapLocked(l: LevelDef) {
     const need = blockedBy(stars, l.id, opened);
@@ -268,11 +313,80 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, 
               <b>Можна перепройти будь-який рівень і зібрати всі зірки.</b>
             </div>
           )}
+          {day && (
+            <div className={`map-card map-day${day.opened ? ' opened' : ''}`} data-testid="day-task">
+              <span className="map-card-head">Завдання дня</span>
+              <b>{day.def.title}</b>
+              {day.opened ? (
+                <span className="map-day-done">Виконано! Подарунок відкрито: +{DAY_GIFT_COINS} монеток</span>
+              ) : day.done ? (
+                <button type="button" className="map-gift" onClick={() => void openGift()}>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 11h16v10H4z M3 7h18v4H3z M12 7v14 M12 7c-2-4-6-4-6-1s4 1 6 1c2 0 6 2 6-1s-4-3-6 1" />
+                  </svg>
+                  Відкрити подарунок
+                </button>
+              ) : (
+                <>
+                  <span className="map-bar">
+                    <i style={{ width: `${(day.have / day.def.need) * 100}%` }} />
+                  </span>
+                  <span className="map-day-row">
+                    <span>
+                      {day.have} з {day.def.need}
+                    </span>
+                    <span>подарунок улюбленцю</span>
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="map-card map-streak" data-testid="streak">
+            <span className="map-card-head">Серія</span>
+            <b>
+              {week.days} {plural(week.days, DAYS)} із завданням дня
+            </b>
+            <div className="map-week">
+              {week.week.map((d) => (
+                <span key={d.day} className={d.state} aria-label={`${d.label}: ${STREAK_STATE[d.state]}`}>
+                  <i />
+                  {d.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="map-extras">
+            <button type="button" className="map-garden" onClick={onOpenGarden}>
+              <FlowerArt state="bloom" color={BED_COLORS[2]} size={26} />
+              Садочок
+            </button>
+            <button
+              type="button"
+              className={`map-blitz${canBlitz ? '' : ' locked'}`}
+              aria-label={canBlitz ? 'Бліц' : 'Бліц, закрито'}
+              onClick={() => (canBlitz ? onOpenBlitz() : setSay(`Бліц відкриється, коли пройдеш рівень ${BLITZ_UNLOCK} — 7 правильних з 10.`))}
+            >
+              {canBlitz ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="bolt">
+                  <path d="M13 2L4 14h7l-1 8 9-12h-7z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="lock">
+                  <rect x="5" y="11" width="14" height="10" rx="3" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+              )}
+              Бліц
+            </button>
+          </div>
+
           <div className="map-buddy">
+            <Pet kind={profile.pet} size={64} label={profile.petName} wear={wear} />
             <div className="bubble" role="status">
               {say ?? `Привіт, ${profile.name}! ${next ? 'Тисни «Грати» або обери рівень на карті.' : 'Ти молодець!'}`}
             </div>
-            <Pet kind={profile.pet} size={130} label={profile.petName} wear={wear} />
           </div>
         </div>
       </div>

@@ -34,6 +34,12 @@ export interface Profile {
   openIslands?: string[];
   /** Stickers of the album (engine/stickers.ts): id → the day it was got (YYYY-MM-DD). */
   stickers?: Record<string, string>;
+  /** Days (local YYYY-MM-DD) whose day task was done and its gift opened — the streak. */
+  dayGifts?: string[];
+  /** Levels passed (1+ star) on `day`, for the day task «Пройди рівень». */
+  passedToday?: { day: string; count: number };
+  /** The best blitz: right answers in a minute. */
+  blitzBest?: number;
 }
 
 /** One press of «Перевірити». */

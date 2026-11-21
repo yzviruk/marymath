@@ -86,6 +86,20 @@
       "w": 1280,
       "x": 5440,
       "y": 920
+    },
+    "Garden.dc.html": {
+      "h": 800,
+      "title": "11 · Садочок фактів",
+      "w": 1280,
+      "x": 6800,
+      "y": 0
+    },
+    "Blitz.dc.html": {
+      "h": 800,
+      "title": "12 · Бліц",
+      "w": 1280,
+      "x": 6800,
+      "y": 920
     }
   },
   "createdOnFiles": {
@@ -129,6 +143,8 @@
     "Parent.dc.html",
     "Task.dc.html",
     "Album.dc.html",
+    "Garden.dc.html",
+    "Blitz.dc.html",
     "Pet.dc.html",
     "NumberLine.dc.html"
   ],

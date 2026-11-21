@@ -7,6 +7,9 @@ import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
 import { PetHome } from './screens/PetHome';
 import { StickerAlbum } from './screens/StickerAlbum';
+import { Garden } from './screens/Garden';
+import { GardenRun } from './screens/GardenRun';
+import { Blitz } from './screens/Blitz';
 import { ParentGate } from './screens/ParentGate';
 import { ParentPanel } from './screens/ParentPanel';
 import { DEFAULT_SETTINGS, getSettings, saveSettings, type Settings } from './data/parent';
@@ -28,9 +31,11 @@ export function App() {
     installSound();
   }, [reload]);
   useEffect(() => setSoundSettings(settings), [settings]);
-  // Music on the map and in the home and album; quieter in a level; none elsewhere.
+  // Music on the map, in the home, album and garden; quieter in a level and a watering; none elsewhere (the blitz too).
   useEffect(() => {
-    setMusicMode(['map', 'petHome', 'album'].includes(route.name) ? 'normal' : route.name === 'level' ? 'quiet' : 'off');
+    setMusicMode(
+      ['map', 'petHome', 'album', 'garden'].includes(route.name) ? 'normal' : ['level', 'gardenRun'].includes(route.name) ? 'quiet' : 'off',
+    );
   }, [route.name]);
   const changeSettings = useCallback(async (patch: Partial<Settings>) => {
     setSettings((s) => ({ ...s, ...patch }));
@@ -70,6 +75,9 @@ export function App() {
             onOpenLevel={(levelId) => go({ name: 'level', profileId: profile!.id, levelId })}
             onOpenPetHome={() => go({ name: 'petHome', profileId: profile!.id })}
             onOpenAlbum={() => go({ name: 'album', profileId: profile!.id })}
+            onOpenGarden={() => go({ name: 'garden', profileId: profile!.id })}
+            onOpenBlitz={() => go({ name: 'blitz', profileId: profile!.id })}
+            onChanged={reload}
             music={settings.music}
             onToggleMusic={() => changeSettings({ music: !settings.music })}
           />
@@ -94,6 +102,15 @@ export function App() {
         break;
       case 'album':
         screen = <StickerAlbum profile={profile!} onBack={back} onChanged={reload} />;
+        break;
+      case 'garden':
+        screen = <Garden profile={profile!} onBack={back} onWater={() => go({ name: 'gardenRun', profileId: profile!.id })} />;
+        break;
+      case 'gardenRun':
+        screen = <GardenRun profile={profile!} onBack={back} onProfileChanged={reload} />;
+        break;
+      case 'blitz':
+        screen = <Blitz profile={profile!} onExit={back} onProfileChanged={reload} />;
         break;
       case 'gate':
         screen = <ParentGate onPass={() => reset({ name: 'parent' })} onBack={back} />;

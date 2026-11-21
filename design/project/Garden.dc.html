@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Садочок фактів</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#5B3FD6}a:hover{color:#4428B8}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; padding: 20px 24px; background: #EAF3FF; font-family: 'Nunito', 'Trebuchet MS', sans-serif; color: #1E2440; display: flex; flex-direction: column; gap: 16px; overflow: hidden">
+
+  <div style="height: 64px; display: flex; align-items: center; gap: 16px">
+    <a href="Map.dc.html" style="height: 52px; padding: 0 20px 0 14px; border-radius: 26px; background: #FFFFFF; display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 900; color: #4F5A78; text-decoration: none; box-shadow: 0 4px 0 #D3E0F5">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #4F5A78; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round"><path d="M15 5l-7 7 7 7"></path></svg>
+      Карта
+    </a>
+    <span style="font-size: 28px; font-weight: 900">Садочок фактів</span>
+    <div style="flex-grow: 1"></div>
+    <div style="display: flex; align-items: center; gap: 12px; height: 52px; padding: 0 20px; border-radius: 26px; background: #FFFFFF; font-size: 22px; font-weight: 900; box-shadow: 0 4px 0 #D3E0F5">
+      <span>Розквітло {{bloomed}} з 20</span>
+      <div style="width: 160px; height: 14px; border-radius: 7px; background: #E7EEF9; overflow: hidden">
+        <div style="width: {{bloomPct}}%; height: 14px; border-radius: 7px; background: #1E9E63"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 24px; flex-grow: 1; min-height: 0">
+    <div style="flex-grow: 1; min-width: 0; box-sizing: border-box; border-radius: 28px; background: #F1FAEC; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 6px 0 #CFE6C4">
+      <sc-for list="{{beds}}" as="b" hint-placeholder-count="4">
+        <div style="display: flex; align-items: stretch; gap: 12px">
+          <div style="width: 72px; flex-shrink: 0; border-radius: 18px; background: {{b.color}}; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0">
+            <span style="font-size: 14px; font-weight: 800">грядка</span>
+            <span style="font-size: 24px; font-weight: 900">{{b.label}}</span>
+          </div>
+          <div style="flex-grow: 1; min-width: 0; border-radius: 20px; background: #FFFFFF; padding: 6px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; box-shadow: inset 0 -16px 0 #D9B48A">
+            <sc-for list="{{b.flowers}}" as="f" hint-placeholder-count="7">
+              <button type="button" aria-label="{{f.aria}}" style="height: 122px; border-radius: 16px; border: {{f.frame}}; background: {{f.tile}}; padding: 4px 2px 18px; box-sizing: border-box; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; cursor: pointer">
+                <sc-if value="{{f.bloom}}" hint-placeholder-val="{{ true }}">
+                  <svg width="56" height="62" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72V36" stroke="#3E9B4F" stroke-width="4" fill="none"></path><path d="M32 56c-10-2-14-8-14-14c8 0 14 6 14 14z" fill="#5DBB63"></path><g fill="{{b.color}}"><circle cx="32" cy="14" r="9"></circle><circle cx="42.4" cy="20" r="9"></circle><circle cx="42.4" cy="32" r="9"></circle><circle cx="32" cy="38" r="9"></circle><circle cx="21.6" cy="32" r="9"></circle><circle cx="21.6" cy="20" r="9"></circle></g><circle cx="32" cy="26" r="8" fill="#FFD34D"></circle></svg>
+                </sc-if>
+                <sc-if value="{{f.bud}}" hint-placeholder-val="{{ false }}">
+                  <svg width="56" height="62" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72V40" stroke="#3E9B4F" stroke-width="4" fill="none"></path><path d="M32 60c-10-2-14-8-14-14c8 0 14 6 14 14z" fill="#5DBB63"></path><ellipse cx="32" cy="30" rx="9" ry="13" fill="{{b.color}}"></ellipse><path d="M23 34c3 8 15 8 18 0c-2 6-16 6-18 0z" fill="#5DBB63"></path></svg>
+                </sc-if>
+                <sc-if value="{{f.thirsty}}" hint-placeholder-val="{{ false }}">
+                  <svg width="56" height="62" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72C32 54 36 44 46 42" stroke="#7FA86A" stroke-width="4" fill="none"></path><path d="M32 62c-9-2-12-7-12-12c7 0 12 5 12 12z" fill="#9CC48A"></path><ellipse cx="48" cy="48" rx="7" ry="11" transform="rotate(-30 48 48)" fill="{{b.color}}" opacity="0.55"></ellipse><path d="M14 10c-5 7-7 10-7 13a7 7 0 0 0 14 0c0-3-2-6-7-13z" fill="#3A8FD6"></path></svg>
+                </sc-if>
+                <sc-if value="{{f.seed}}" hint-placeholder-val="{{ false }}">
+                  <svg width="56" height="62" viewBox="0 0 64 72" aria-hidden="true"><ellipse cx="32" cy="66" rx="20" ry="6" fill="#B98A5C"></ellipse><path d="M32 62V50" stroke="#7FB86E" stroke-width="3" fill="none"></path><path d="M32 52c-6 0-9-4-9-8c5 0 9 3 9 8zM32 54c5 0 8-3 8-7c-5 0-8 3-8 7z" fill="#9CD08A"></path></svg>
+                </sc-if>
+                <span style="font-size: 17px; font-weight: 900; color: {{f.fg}}">{{f.label}}</span>
+                <div style="display: flex; gap: 4px; height: 10px">
+                  <sc-for list="{{f.days}}" as="d" hint-placeholder-count="3">
+                    <div style="width: 10px; height: 10px; border-radius: 5px; background: {{d.bg}}"></div>
+                  </sc-for>
+                </div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="margin-top: auto; display: flex; gap: 22px; justify-content: center; font-size: 15px; font-weight: 800; color: #4F5A78">
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="22" height="22" viewBox="0 0 64 72" aria-hidden="true"><ellipse cx="32" cy="64" rx="22" ry="8" fill="#B98A5C"></ellipse><path d="M32 60V44" stroke="#7FB86E" stroke-width="5"></path></svg>зернятко — ще не пробували</span>
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="22" height="22" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72V40" stroke="#3E9B4F" stroke-width="6"></path><ellipse cx="32" cy="28" rx="12" ry="18" fill="#E0508E"></ellipse></svg>бутон — 1–2 дні з 3</span>
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="22" height="22" viewBox="0 0 64 72" aria-hidden="true"><path d="M14 4c-8 11-11 16-11 21a11 11 0 0 0 22 0c0-5-3-10-11-21z" fill="#3A8FD6"></path></svg>хоче пити — була помилка</span>
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="22" height="22" viewBox="0 0 64 72" aria-hidden="true"><g fill="#E0508E"><circle cx="32" cy="16" r="13"></circle><circle cx="48" cy="34" r="13"></circle><circle cx="16" cy="34" r="13"></circle><circle cx="32" cy="50" r="13"></circle></g><circle cx="32" cy="33" r="10" fill="#FFD34D"></circle></svg>квітка — знаю (3 дні поспіль)</span>
+      </div>
+    </div>
+
+    <div style="width: 324px; flex-shrink: 0; box-sizing: border-box; border-radius: 28px; background: #FFFFFF; padding: 20px 22px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 6px 0 #D3E0F5">
+      <div style="width: 132px; height: 132px; border-radius: 66px; background: #FCE8F1; display: flex; align-items: center; justify-content: center">
+        <svg width="84" height="94" viewBox="0 0 64 72" aria-hidden="true"><path d="M32 72V40" stroke="#3E9B4F" stroke-width="4" fill="none"></path><path d="M32 60c-10-2-14-8-14-14c8 0 14 6 14 14z" fill="#5DBB63"></path><ellipse cx="32" cy="30" rx="9" ry="13" fill="#E0508E"></ellipse><path d="M23 34c3 8 15 8 18 0c-2 6-16 6-18 0z" fill="#5DBB63"></path></svg>
+      </div>
+      <span style="font-size: 34px; font-weight: 900">4 × 6 = 24</span>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px">
+        <span style="height: 36px; padding: 0 12px; border-radius: 18px; background: #F2F6FD; font-size: 19px; font-weight: 900; display: flex; align-items: center">6 × 4 = 24</span>
+        <span style="height: 36px; padding: 0 12px; border-radius: 18px; background: #F2F6FD; font-size: 19px; font-weight: 900; display: flex; align-items: center">24 : 4 = 6</span>
+        <span style="height: 36px; padding: 0 12px; border-radius: 18px; background: #F2F6FD; font-size: 19px; font-weight: 900; display: flex; align-items: center">24 : 6 = 4</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; color: #4F5A78">
+        <div style="width: 16px; height: 16px; border-radius: 8px; background: #1E9E63"></div>
+        <div style="width: 16px; height: 16px; border-radius: 8px; background: #1E9E63"></div>
+        <div style="width: 16px; height: 16px; border-radius: 8px; background: #E1E8F4"></div>
+        2 дні з 3
+      </div>
+
+      <div style="display: flex; align-items: flex-end; gap: 10px; align-self: stretch">
+        <dc-import name="Pet" kind="dog" size="84" hint-size="84px,84px"></dc-import>
+        <div style="flex-grow: 1; border-radius: 18px 18px 18px 4px; background: #F1EDFF; padding: 10px 14px; font-size: 17px; line-height: 22px; font-weight: 800; color: #3E27A3">Полий завтра ще раз — і бутон розквітне!</div>
+      </div>
+
+      <button type="button" style="margin-top: auto; align-self: stretch; height: 76px; border-radius: 38px; border: 0; background: #1E9E63; color: #FFFFFF; font-family: inherit; font-size: 26px; font-weight: 900; box-shadow: 0 6px 0 #137447; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer">
+        <svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #FFFFFF; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round"><path d="M4 10h11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z M15 12l5-4 M4 10a3 3 0 0 1 3-3h5a3 3 0 0 1 3 3 M21 14l-1 2 M18 15l-1 2"></path></svg>
+        Полити квіти
+      </button>
+      <span style="font-size: 15px; font-weight: 800; color: #4F5A78; text-align: center">10 прикладів з бутонів і тих, що хочуть пити</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const known = ['2×2', '2×3', '2×4', '2×5', '2×10', '3×3', '3×10', '5×5', '3×4'];
+    const learning = { '2×6': 2, '2×7': 1, '3×5': 2, '4×6': 2, '4×4': 1, '5×6': 1 };
+    const thirsty = ['3×6', '4×7'];
+    const rows = [
+      { label: 'на 2', color: '#E0508E', b: [2, 3, 4, 5, 6, 7, 10], a: 2 },
+      { label: 'на 3', color: '#E8770E', b: [3, 4, 5, 6, 7, 10], a: 3 },
+      { label: 'на 4', color: '#8A5BD6', b: [4, 5, 6, 7], a: 4 },
+      { label: 'на 5', color: '#2F6FED', b: [5, 6, 7], a: 5 }
+    ];
+    let bloomed = 0;
+    const beds = rows.map((r) => ({
+      label: r.label, color: r.color,
+      flowers: r.b.map((b) => {
+        const key = r.a + '×' + b;
+        const isKnown = known.includes(key);
+        const isThirsty = thirsty.includes(key);
+        const n = isKnown ? 3 : (learning[key] || 0);
+        const isBud = !isKnown && !isThirsty && n > 0;
+        if (isKnown) bloomed++;
+        const selected = key === '4×6';
+        const state = isKnown ? 'розквітла' : isThirsty ? 'хоче пити' : isBud ? 'бутон, ' + n + ' з 3' : 'зернятко';
+        return {
+          label: r.a + ' × ' + b, aria: r.a + ' × ' + b + ' — ' + state,
+          bloom: isKnown, bud: isBud, thirsty: isThirsty, seed: !isKnown && !isThirsty && !isBud,
+          frame: selected ? '4px solid #5B3FD6' : '0',
+          tile: selected ? '#F1EDFF' : 'transparent',
+          fg: isKnown || isBud || isThirsty ? '#1E2440' : '#6B7592',
+          days: [0, 1, 2].map((i) => ({ bg: i < n ? '#1E9E63' : '#E1E8F4' }))
+        };
+      })
+    }));
+    return { beds, bloomed, bloomPct: Math.round(bloomed / 20 * 100) };
+  }
+}
+</script>
+</body>
+</html>

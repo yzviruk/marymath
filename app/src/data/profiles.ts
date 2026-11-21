@@ -1,3 +1,4 @@
+import { localDay } from '../engine/stats';
 import { getDb } from './db';
 import { DEFAULT_PET_NAME, PET_KINDS, type PetKind, type Profile } from './types';
 
@@ -80,7 +81,7 @@ export async function addCoins(id: string, coins: number): Promise<Profile> {
 }
 
 /** Keeps the best stars of a level, recomputes the total and remembers the level as the last one. */
-export async function recordLevelStars(id: string, level: string, stars: number): Promise<Profile> {
+export async function recordLevelStars(id: string, level: string, stars: number, now = new Date()): Promise<Profile> {
   const db = await getDb();
   const tx = db.transaction('profiles', 'readwrite');
   const p = await tx.store.get(id);
@@ -90,6 +91,10 @@ export async function recordLevelStars(id: string, level: string, stars: number)
   p.levelStars = levelStars;
   p.stars = Object.values(levelStars).reduce((s, n) => s + n, 0);
   p.lastLevel = level;
+  if (stars >= 1) {
+    const day = localDay(now);
+    p.passedToday = { day, count: p.passedToday?.day === day ? p.passedToday.count + 1 : 1 };
+  }
   await tx.store.put(p);
   await tx.done;
   return p;
