@@ -145,7 +145,22 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
 });
 
-test('PWA manifest is served', async ({ request }) => {
+test('map: all five islands fit inside the 1280×800 stage', async ({ page }) => {
+  await createProfile(page);
+  const grid = page.locator('.map-islands');
+  const [client, scroll] = await grid.evaluate((g) => [g.clientWidth, g.scrollWidth]);
+  expect(scroll).toBeLessThanOrEqual(client);
+  const stage = await page.locator('.stage').boundingBox();
+  const islands = page.locator('.map-islands li');
+  await expect(islands).toHaveCount(5);
+  for (let i = 0; i < 5; i++) {
+    const box = (await islands.nth(i).boundingBox())!;
+    expect(box.x + box.width).toBeLessThanOrEqual(stage!.x + stage!.width);
+  }
+  await expect(page.getByRole('button', { name: 'Рівень :4' })).toBeInViewport({ ratio: 1 });
+});
+
+test('PWA manifest is served',async ({ request }) => {
   const res = await request.get('./manifest.webmanifest');
   expect(res.ok()).toBeTruthy();
   const manifest = await res.json();

@@ -15,7 +15,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 1.35fr 1.35fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 0.7fr);
   gap: 16px;
 }
 .map-islands li {
@@ -60,7 +60,7 @@
 }
 .map-levels {
   display: grid;
-  grid-template-columns: repeat(4, 64px);
+  grid-template-columns: repeat(3, 64px);
   gap: 10px;
 }
 .map-level {
