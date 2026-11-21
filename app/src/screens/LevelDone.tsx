@@ -3,6 +3,8 @@ import { Pet } from '../components/Pet';
 import { ItemIcon } from '../components/ShopArt';
 import type { PetKind } from '../data/types';
 import { getItem } from '../engine/shop';
+import { getSticker } from '../engine/stickers';
+import { StickerBadge } from '../components/StickerArt';
 import './LevelDone.css';
 
 interface Props {
@@ -10,6 +12,8 @@ interface Props {
   petWear?: string[];
   /** A rare shop thing the boss just gave (first pass only). */
   rareItem?: string | null;
+  /** Stickers glued into the album at the end of this level. */
+  newStickers?: string[];
   title: string;
   right: number;
   stars: number;
@@ -26,8 +30,10 @@ interface Props {
 const STAR = 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z';
 
 /** Simple level result (screen 6); stickers and the pet's dance come in stage 5. */
-export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, bonus, levelFull, nextLabel, onAgain, onNext, onMap }: Props) {
+export function LevelDone({ pet, petWear, rareItem, newStickers = [], title, right, stars, coins, bonus, levelFull, nextLabel, onAgain, onNext, onMap }: Props) {
   const passed = stars > 0;
+  // A boss sticker is the one to show; the rest are «і ще N».
+  const mainSticker = getSticker(newStickers.find((id) => id.startsWith('boss-')) ?? newStickers[0] ?? '');
   return (
     <div className="screen ld">
       <div className="panel ld-card">
@@ -62,6 +68,15 @@ export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, 
               <ItemIcon id={rareItem} size={56} />
               <span>
                 <b>Нова рідкісна річ!</b> {getItem(rareItem)?.name} — шукай у будиночку.
+              </span>
+            </div>
+          )}
+          {mainSticker && (
+            <div className="ld-rare ld-sticker" role="status">
+              <StickerBadge sticker={mainSticker} got size={56} tilt={-6} />
+              <span>
+                <b>Нова наліпка!</b> «{mainSticker.name}»
+                {newStickers.length > 1 && ` і ще ${newStickers.length - 1}`} — дивись в альбомі.
               </span>
             </div>
           )}

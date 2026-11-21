@@ -6,6 +6,7 @@ import { useRouter } from './router';
 import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
 import { PetHome } from './screens/PetHome';
+import { StickerAlbum } from './screens/StickerAlbum';
 import { StubScreen } from './screens/StubScreen';
 import { LevelRun } from './screens/LevelRun';
 import { WhoPlays } from './screens/WhoPlays';
@@ -51,6 +52,7 @@ export function App() {
             onSwitchChild={() => reset({ name: 'who' })}
             onOpenLevel={(levelId) => go({ name: 'level', profileId: profile!.id, levelId })}
             onOpenPetHome={() => go({ name: 'petHome', profileId: profile!.id })}
+            onOpenAlbum={() => go({ name: 'album', profileId: profile!.id })}
           />
         );
         break;
@@ -70,6 +72,9 @@ export function App() {
         screen = (
           <PetHome profile={profile!} onBack={back} onChanged={reload} />
         );
+        break;
+      case 'album':
+        screen = <StickerAlbum profile={profile!} onBack={back} onChanged={reload} />;
         break;
       case 'parent':
         screen = (

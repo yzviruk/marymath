@@ -1,5 +1,6 @@
 import { columnAdd, columnSub, type ColumnInfo } from './column';
 import { EARLY_LIMIT, facts, LATE_LIMIT, type Fact } from './facts';
+import { columnProblem, factProblem } from './problems';
 import { Rng, sample } from './rng';
 import { columnTask, commutativeTask, divComposeTask, factFamilyTask, factTask, repeatedAddTask } from './tasks';
 import type { IslandId, LevelId, Task } from './types';
@@ -197,6 +198,12 @@ function boss(id: LevelId, island: IslandId, title: string, from: LevelDef[]): L
   return { id, island, title, sample: '—', boss: true, make: (rng) => rng.pick(from).make(rng) };
 }
 
+// ── Задачі ─────────────────────────────────────────────────────────────────
+const TASKS: LevelDef[] = [
+  { id: '?1', island: 'tasks', title: 'Текстові задачі + стовпчик', sample: '«У магазині було 245 книг …»', make: columnProblem('?1') },
+  { id: '?2', island: 'tasks', title: 'Текстові задачі × і : з bar model', sample: '«15 наліпок порівну на 3 сторінки …»', make: factProblem('?2') },
+];
+
 const byId = (list: LevelDef[], ids: string[]) => ids.map((id) => list.find((l) => l.id === id)!);
 
 export const LEVELS: LevelDef[] = [
@@ -208,6 +215,8 @@ export const LEVELS: LevelDef[] = [
   boss('×♛', 'mul', 'Бос: змішані', byId(MUL, ['×3', '×4', '×5', '×6'])),
   ...DIV,
   boss(':♛', 'div', 'Бос: змішані × і :', [...byId(MUL, ['×3', '×4', '×5', '×6']), ...byId(DIV, [':1', ':2', ':5'])]),
+  ...TASKS,
+  boss('?♛', 'tasks', 'Бос: фінальне випробування', TASKS),
 ];
 
 export const ISLANDS: { id: IslandId; name: string }[] = [
@@ -215,7 +224,11 @@ export const ISLANDS: { id: IslandId; name: string }[] = [
   { id: 'sub', name: 'Віднімання' },
   { id: 'mul', name: 'Множення' },
   { id: 'div', name: 'Ділення' },
+  { id: 'tasks', name: 'Задачі' },
 ];
+
+/** The four islands of the actions; Задачі opens after their bosses. */
+export const ACTION_ISLANDS = ISLANDS.filter((i) => i.id !== 'tasks');
 
 export function getLevel(id: LevelId): LevelDef {
   const level = LEVELS.find((l) => l.id === id);

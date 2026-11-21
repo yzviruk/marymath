@@ -38,6 +38,8 @@ export interface CheckRecord {
   tryNo: number;
   hintUsed: boolean;
   ms: number;
+  /** Word problems: the check of the chosen action and numbers. */
+  stage?: 'setup';
 }
 
 export type DiskMode = 'drag' | 'show' | 'none';

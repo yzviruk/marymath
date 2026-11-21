@@ -1,0 +1,16 @@
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 3px dashed #c9d6ee;
+}
+.sticker.got {
+  border-style: solid;
+  border-color: #fff;
+}
+.sticker b {
+  font-weight: 900;
+  line-height: 1;
+}

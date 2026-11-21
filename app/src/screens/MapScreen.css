@@ -66,6 +66,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.map-album {
+  background: #e9e2ff;
+  color: var(--accent-dark);
+  box-shadow: 0 4px 0 #c4b6f5;
+}
+.map-album svg {
+  stroke: var(--accent-dark);
+}
 .map-home:active,
 .map-who:active {
   transform: translateY(3px);

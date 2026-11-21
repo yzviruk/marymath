@@ -5,6 +5,7 @@ export type Route =
   | { name: 'map'; profileId: string }
   | { name: 'level'; profileId: string; levelId: string }
   | { name: 'petHome'; profileId: string }
+  | { name: 'album'; profileId: string }
   | { name: 'parent' }
   | { name: 'levels' };
 

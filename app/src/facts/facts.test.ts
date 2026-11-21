@@ -177,7 +177,8 @@ describe('texts', () => {
 describe('review', () => {
   it('every level except bosses rebuilds its own tasks', () => {
     const rng = new Rng(5);
-    for (const level of LEVELS.filter((l) => !l.boss)) {
+    // Word problems are not rebuilt from their numbers: their texts differ, review skips them.
+    for (const level of LEVELS.filter((l) => !l.boss && l.island !== 'tasks')) {
       for (let i = 0; i < 30; i++) {
         const t = level.make(rng);
         const again = level.rebuild!(t.main.a, t.main.b);

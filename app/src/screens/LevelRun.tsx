@@ -6,6 +6,7 @@ import { FactTask } from '../facts/FactTask';
 import type { FactMode } from '../facts/texts';
 import { addCoins, getProfile, recordLevelStars } from '../data/profiles';
 import { grantItem } from '../data/shop';
+import { syncStickers } from '../data/stickers';
 import type { Profile } from '../data/types';
 import { getLevel, ISLANDS, LEVELS } from '../engine/levels';
 import { levelReward } from '../engine/rewards';
@@ -14,6 +15,7 @@ import { randomSeed } from '../engine/rng';
 import { buildLevel, similarTask, TASKS_PER_LEVEL } from '../engine/session';
 import type { Task } from '../engine/types';
 import { LevelDone } from './LevelDone';
+import { ProblemTask } from '../problems/ProblemTask';
 import './LevelRun.css';
 
 /**
@@ -60,7 +62,14 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<Outcome[]>([]);
   const [earned, setEarned] = useState(0);
-  const [finished, setFinished] = useState<{ stars: number; right: number; bonus: number; full: boolean; rare: string | null } | null>(null);
+  const [finished, setFinished] = useState<{
+    stars: number;
+    right: number;
+    bonus: number;
+    full: boolean;
+    rare: string | null;
+    stickers: string[];
+  } | null>(null);
   /** The level already had 3 stars when this run began: no coins here, they wait further on. */
   const [levelFull, setLevelFull] = useState(false);
 
@@ -108,6 +117,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
         pet={profile.pet}
         petWear={wornIds(profile.worn)}
         rareItem={finished.rare}
+        newStickers={finished.stickers}
         title={title}
         right={finished.right}
         stars={finished.stars}
@@ -142,6 +152,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
       tryNo: r.tryNo,
       hintUsed: r.hintUsed,
       ms: r.ms,
+      ...(r.stage ? { stage: r.stage } : {}),
     });
   }
 
@@ -170,10 +181,11 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
     if (bonus) await addCoins(profile.id, bonus);
     await recordLevelStars(profile.id, levelId, stars);
     // The first passed boss of an island gives its rare thing.
-    const rare = level.boss && stars > 0 ? rareItemFor(level.island) : null;
+    const rare = level.boss && stars > 0 ? (rareItemFor(level.island) ?? null) : null;
     const got = rare ? await grantItem(profile.id, rare.id) : null;
+    const { added } = await syncStickers(profile.id);
     await onProfileChanged();
-    setFinished({ stars, right, bonus, full: levelFull, rare: got && rare ? rare.id : null });
+    setFinished({ stars, right, bonus, full: levelFull, rare: got && rare ? rare.id : null, stickers: added });
   }
 
   return (
@@ -199,7 +211,18 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
           {profile.coins + earned}
         </span>
       </div>
-      {slot.task.kind === 'column' ? (
+      {slot.task.kind === 'word' ? (
+        <ProblemTask
+          key={`${run}-${index}-${slot.task.key}`}
+          task={slot.task}
+          pet={profile.pet}
+          petName={profile.petName}
+          petWear={wornIds(profile.worn)}
+          mode={!level.boss && index < CONCRETE_TASKS ? 'pictorial' : 'abstract'}
+          onCheck={record}
+          onDone={done}
+        />
+      ) : slot.task.kind === 'column' ? (
         <ColumnTask
           key={`${run}-${index}-${slot.task.key}`}
           task={slot.task}

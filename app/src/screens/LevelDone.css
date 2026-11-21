@@ -121,3 +121,10 @@
 .ld-rare b {
   color: #9a5b00;
 }
+.ld-sticker {
+  background: #f1edff;
+  border-color: #c4b6f5;
+}
+.ld-sticker b {
+  color: var(--accent-dark);
+}

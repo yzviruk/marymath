@@ -6,7 +6,9 @@ const ISLAND_LEVELS = [
   ['−1', '−2', '−3', '−4', '−5', '−♛'],
   ['×1', '×2', '×3', '×4', '×5', '×6', '×♛'],
   [':1', ':2', ':3', ':4', ':5', ':♛'],
+  ['?1', '?2', '?♛'],
 ];
+const BOSSES = ['+♛', '−♛', '×♛', ':♛'];
 
 /**
  * Opens level `id` for the test the way a child would have: gives 1 star to every level before
@@ -16,6 +18,8 @@ export async function unlockLevel(page: Page, id: string) {
   const island = ISLAND_LEVELS.find((l) => l.includes(id));
   if (!island) throw new Error(`Unknown level ${id}`);
   const before = island.slice(0, island.indexOf(id));
+  // The Задачі island opens after the four bosses.
+  if (id.startsWith('?')) before.push(...BOSSES);
   if (!before.length) return;
   await page.evaluate(
     (ids) =>

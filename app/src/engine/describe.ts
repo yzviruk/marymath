@@ -1,5 +1,15 @@
 import type { ErrorKind, Task } from './types';
 
+const PROBLEM_KINDS = {
+  join: 'дві частини → разом',
+  'add-to': 'було і додали',
+  'take-away': 'було і забрали',
+  part: 'ціле і частина → друга частина',
+  groups: 'однакові групи → усього',
+  share: 'порівну на частини',
+  measure: 'по скільки → скільки частин',
+} as const;
+
 const PLACE_FROM = ['з одиниць', 'з десятків', 'із сотень', 'з тисяч'];
 
 /** Short Ukrainian tags describing what a task trains (for the parent preview and stats). */
@@ -25,6 +35,7 @@ export function describeTask(task: Task): string[] {
     if (pic.mode === 'group') tags.push(`${total} по ${pic.size} — скільки груп?`);
   }
   if (task.choices) tags.push(`числа: ${task.choices.join(', ')}`);
+  if (task.problem) tags.push(PROBLEM_KINDS[task.problem.kind]);
   if (task.kind === 'fact-family') tags.push(`трикутник ${task.main.result} / ${task.main.a} / ${task.main.b}`);
   return tags;
 }
@@ -36,5 +47,6 @@ export const ERROR_LABELS: Record<ErrorKind, string> = {
   'reversed-division': 'Переплутаний порядок у діленні',
   'wrong-operation': 'Інша дія замість потрібної',
   'neighbor-fact': 'Сусідній факт',
+  'reversed-order': 'Ціле не першим у відніманні',
   other: 'Інша помилка',
 };

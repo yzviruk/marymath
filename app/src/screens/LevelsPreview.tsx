@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { BackIcon } from '../components/Icons';
 import { describeTask } from '../engine/describe';
+import { problemText } from '../engine/problems';
 import { ISLANDS, LEVELS } from '../engine/levels';
 import { randomSeed } from '../engine/rng';
 import { buildLevel } from '../engine/session';
@@ -72,6 +73,16 @@ export function LevelsPreview({ onBack }: { onBack: () => void }) {
 }
 
 function TaskView({ task }: { task: Task }) {
+  if (task.problem) {
+    return (
+      <div className="lp-word">
+        <p>{problemText(task.problem)}</p>
+        <span className="lp-line">
+          {task.main.a} {task.main.op} {task.main.b} = <b className="lp-ans">{task.main.result}</b>
+        </span>
+      </div>
+    );
+  }
   return (
     <div className={`lp-lines${task.lines.length > 1 ? ' many' : ''}`}>
       {task.lines.map((line, li) => (

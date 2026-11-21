@@ -56,8 +56,8 @@ a{color:#5B3FD6}a:hover{color:#4428B8}
       <div style="width: 168px; height: 168px; border-radius: 84px; background: #3FA34D; border: 6px solid #FFFFFF; box-sizing: border-box; box-shadow: 0 0 0 4px #CDEBD2, 0 8px 0 #2E7D3A; transform: rotate(-6deg); display: flex; align-items: center; justify-content: center">
         <svg width="88" height="88" viewBox="0 0 24 24" aria-hidden="true" style="fill: none; stroke: #FFFFFF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"><path d="M12 3l6 8h-3.5l4.5 6H5l4.5-6H6z M12 17v4"></path></svg>
       </div>
-      <span style="font-size: 26px; font-weight: 900; text-align: center">Переможниця лісу</span>
-      <span style="font-size: 18px; line-height: 24px; font-weight: 700; color: #4F5A78; text-align: center">Перемогла боса острова Додавання</span>
+      <span style="font-size: 26px; font-weight: 900; text-align: center">Лісова корона</span>
+      <span style="font-size: 18px; line-height: 24px; font-weight: 700; color: #4F5A78; text-align: center">За боса острова Додавання</span>
       <span style="height: 34px; padding: 0 14px; border-radius: 17px; background: #E4F5EC; color: #137447; font-size: 16px; font-weight: 900; display: flex; align-items: center">20 листопада</span>
 
       <div style="display: flex; align-items: flex-end; gap: 10px; align-self: stretch">
@@ -91,7 +91,7 @@ class Component extends DCLogic {
       triangle: 'M12 4l8.5 15h-17z',
       book: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z M21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
       star: 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z',
-      coin: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M14.5 9h-4a1.5 1.5 0 0 0 0 3h3a1.5 1.5 0 0 1 0 3h-4M12 7v10',
+      coin: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 7.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9',
       heart: 'M12 20s-7.5-4.5-7.5-10a4 4 0 0 1 7.5-2.4A4 4 0 0 1 19.5 10c0 5.5-7.5 10-7.5 10z',
       bag: 'M5 8h14l-1 13H6z M9 8V6a3 3 0 0 1 6 0v2',
       cal: 'M4 6h16v14H4z M4 10h16 M8 3v5 M16 3v5'
@@ -109,11 +109,11 @@ class Component extends DCLogic {
     const rows = [
       { title: 'Острови', items: mk([
         ['Перший рівень', 'пройди перший рівень', '#5B3FD6', 'flag', '', true],
-        ['Переможниця лісу', 'переможи боса Додавання', '#3FA34D', 'tree', '', true],
-        ['Переможниця пустелі', 'переможи боса Віднімання', '#D9861C', 'cactus', '', false],
+        ['Лісова корона', 'переможи боса Додавання', '#3FA34D', 'tree', '', true],
+        ['Пустельна корона', 'переможи боса Віднімання', '#D9861C', 'cactus', '', false],
         ['Цукеркова корона', 'переможи боса Множення', '#E0508E', 'lolly', '', false],
         ['Кришталева корона', 'переможи боса Ділення', '#3A8FD6', 'crystal', '', false],
-        ['Володарка замку', 'переможи боса Задач', '#7A5BD6', 'castle', '', false]
+        ['Корона замку', 'переможи боса Задач', '#7A5BD6', 'castle', '', false]
       ]) },
       { title: 'Уміння', items: mk([
         ['Перше перенесення', 'перенеси десяток', '#E8770E', '', '+1', true],
@@ -127,7 +127,7 @@ class Component extends DCLogic {
         ['10 поспіль', '10 правильних поспіль', '#1E9E63', '', '10', true],
         ['Три зірки', 'пройди рівень на 3 зірки', '#E6A100', 'star', '', true],
         ['100 монеток', 'збери 100 монеток', '#D98A12', 'coin', '', false],
-        ['Не здаюся', 'виправ помилку сама', '#E5484D', 'heart', '', true],
+        ['Не здаюся', 'виправ помилку', '#E5484D', 'heart', '', true],
         ['Перша покупка', 'купи щось у магазині', '#2E9C9C', 'bag', '', false],
         ['Тиждень занять', 'займайся 7 різних днів', '#4F6BD6', 'cal', '', false]
       ]) }

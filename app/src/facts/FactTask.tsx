@@ -625,7 +625,7 @@ function lineOf(task: Task, model: Explanation) {
   );
 }
 
-function SpeakButton({ text }: { text: string }) {
+export function SpeakButton({ text }: { text: string }) {
   const can = typeof window !== 'undefined' && 'speechSynthesis' in window;
   if (!can) return null;
   return (

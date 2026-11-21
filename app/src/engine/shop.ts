@@ -51,8 +51,8 @@ export function getItem(id: string): ShopItem | undefined {
 }
 
 /** The rare thing a boss of this island gives. */
-export function rareItemFor(island: IslandId): ShopItem {
-  return SHOP.find((i) => i.rareFor === island)!;
+export function rareItemFor(island: IslandId): ShopItem | undefined {
+  return SHOP.find((i) => i.rareFor === island);
 }
 
 export type Worn = Partial<Record<Slot, string>>;

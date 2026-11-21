@@ -175,6 +175,7 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await expect(page.getByText('10 з 10')).toBeVisible();
   await expect(page.getByRole('img', { name: '3 зірки з 3' })).toBeVisible();
   await expect(page.getByText('+20')).toBeVisible();
+  await expect(page.getByText('Нова наліпка!')).toBeVisible();
   await page.getByRole('button', { name: 'Карта' }).click();
   await expect(page.getByRole('button', { name: 'Рівень +1, зірок: 3' })).toBeVisible();
   await expect(page.locator('.coins').filter({ hasText: '20' })).toBeVisible();
@@ -220,7 +221,7 @@ test('shop: buy with a confirm, wear, see the clothes on the map', async ({ page
   await page.getByRole('button', { name: 'Купити: Бантик, 15 монеток' }).click();
   await expect(page.getByText('Купити за 15?')).toBeVisible();
   await page.getByRole('button', { name: 'Так' }).click();
-  await expect(page.getByRole('status')).toHaveText('Дякую за бантик! Пограємо?');
+  await expect(page.getByRole('status')).toHaveText('Дякую за бантик! Пограємо? І ще нова наліпка в альбомі!');
   await expect(page.locator('.coins')).toContainText('35');
   await expect(page.getByRole('button', { name: 'Зняти: Бантик' })).toBeVisible();
 

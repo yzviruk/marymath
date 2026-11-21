@@ -107,3 +107,18 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
+.lp-word {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-weight: 800;
+}
+.lp-word p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 19px;
+}
+.lp-word .lp-line {
+  font-size: 20px;
+  font-weight: 900;
+}

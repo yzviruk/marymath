@@ -4,6 +4,7 @@ import { Pet } from '../components/Pet';
 import { ItemIcon } from '../components/ShopArt';
 import { MAX_NAME_LENGTH, ProfileError, updateProfile } from '../data/profiles';
 import { buyItem, setHidden, setWorn } from '../data/shop';
+import { syncStickers } from '../data/stickers';
 import type { Profile } from '../data/types';
 import { ISLANDS } from '../engine/levels';
 import { SHOP, wornIds, type ShopItem, type ShopTab } from '../engine/shop';
@@ -50,15 +51,22 @@ export function PetHome({ profile, onBack, onChanged }: Props) {
   const worn = new Set(Object.values(profile.worn ?? {}));
   const inRoom = SHOP.filter((i) => i.tab !== 'clothes' && owned.has(i.id) && !hidden.has(i.id));
 
+  /** Runs a change; `run` may return words to add to the pet's line (a new sticker). */
   async function act(run: () => Promise<unknown>, line: string) {
     try {
-      await run();
-      setSay(line);
+      const more = await run();
+      setSay(typeof more === 'string' ? `${line} ${more}` : line);
       await onChanged();
     } catch (e) {
       setSay(e instanceof ProfileError ? e.message : 'Ой, щось не вийшло. Спробуй ще раз.');
     }
     setConfirm(null);
+  }
+
+  async function buyAndStick(itemId: string) {
+    await buyItem(profile.id, itemId);
+    const { added } = await syncStickers(profile.id);
+    return added.length ? 'І ще нова наліпка в альбомі!' : undefined;
   }
 
   async function saveName() {
@@ -107,7 +115,7 @@ export function PetHome({ profile, onBack, onChanged }: Props) {
     } else if (confirm === item.id) {
       control = (
         <span className="ph-confirm">
-          <button type="button" className="ph-yes" onClick={() => act(() => buyItem(profile.id, item.id), `Дякую за ${item.thanks}! Пограємо?`)}>
+          <button type="button" className="ph-yes" onClick={() => act(() => buyAndStick(item.id), `Дякую за ${item.thanks}! Пограємо?`)}>
             Так
           </button>
           <button type="button" className="ph-no" onClick={() => setConfirm(null)}>

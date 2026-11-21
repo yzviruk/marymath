@@ -1,4 +1,5 @@
 import type { ColumnInfo } from './column';
+import type { Problem } from './problems';
 
 export type Op = '+' | '−' | '×' | ':';
 
@@ -13,9 +14,10 @@ export type TaskKind =
   | 'repeated-add' // 4 + 4 + 4 = 4 × ? = ?
   | 'commutative' // 2 × 5 = 5 × ? = ?
   | 'div-compose' // picture → place 24, 6, 4 into ? : ? = ?
-  | 'fact-family'; // 6 × 4 = ?, 4 × 6 = ?, 24 : 6 = ?, 24 : 4 = ?
+  | 'fact-family' // 6 × 4 = ?, 4 × 6 = ?, 24 : 6 = ?, 24 : 4 = ?
+  | 'word'; // a word problem: choose the action, place the numbers, solve (engine/problems.ts)
 
-export type IslandId = 'add' | 'sub' | 'mul' | 'div';
+export type IslandId = 'add' | 'sub' | 'mul' | 'div' | 'tasks';
 
 /** Level ids as shown on the map: +1…+7, −1…−5, ×1…×6, :1…:5, and bosses +♛ −♛ ×♛ :♛. */
 export type LevelId = string;
@@ -43,6 +45,8 @@ export interface Task {
   picture?: Picture;
   /** div-compose: the numbers the child places into the boxes, in shuffled order. */
   choices?: number[];
+  /** word: the text, the bar model and the answer sentence. */
+  problem?: Problem;
 }
 
 export type ErrorKind =
@@ -52,4 +56,5 @@ export type ErrorKind =
   | 'reversed-division' // 4 : 6 = 24
   | 'wrong-operation' // 12 : 3 = 36 or 15; 6 × 4 = 10
   | 'neighbor-fact' // 6 × 4 = 28
+  | 'reversed-order' // word problem: 128 − 245 (the whole has to come first)
   | 'other';

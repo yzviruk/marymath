@@ -30,6 +30,8 @@ export interface Profile {
   worn?: Partial<Record<'head' | 'ear' | 'eyes' | 'neck', string>>;
   /** Toys and room things the child put away. */
   hidden?: string[];
+  /** Stickers of the album (engine/stickers.ts): id → the day it was got (YYYY-MM-DD). */
+  stickers?: Record<string, string>;
 }
 
 /** One press of «Перевірити». */
@@ -54,4 +56,6 @@ export interface Attempt {
   tryNo: number;
   hintUsed: boolean;
   ms: number;
+  /** Word problems: 'setup' — the check of the chosen action and numbers, before solving. */
+  stage?: 'setup';
 }

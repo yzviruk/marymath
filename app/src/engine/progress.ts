@@ -1,4 +1,4 @@
-import { ISLANDS, LEVELS, type LevelDef } from './levels';
+import { ACTION_ISLANDS, ISLANDS, LEVELS, type LevelDef } from './levels';
 import type { IslandId } from './types';
 
 /**
@@ -18,7 +18,8 @@ export function isUnlocked(stars: Stars, id: string): boolean {
   if (!level) return false;
   const same = levelsOf(level.island);
   const i = same.findIndex((l) => l.id === id);
-  return i === 0 || isPassed(stars, same[i - 1].id);
+  if (i === 0) return level.island !== 'tasks' || tasksIslandOpen(stars);
+  return isPassed(stars, same[i - 1].id);
 }
 
 /** The level to play next on an island: the first open one not passed yet; null when all are passed. */
@@ -31,7 +32,7 @@ export function passedCount(stars: Stars, island: IslandId): number {
 }
 
 export function tasksIslandOpen(stars: Stars): boolean {
-  return ISLANDS.every((i) => levelsOf(i.id).filter((l) => l.boss).every((l) => isPassed(stars, l.id)));
+  return ACTION_ISLANDS.every((i) => levelsOf(i.id).filter((l) => l.boss).every((l) => isPassed(stars, l.id)));
 }
 
 /**
@@ -56,5 +57,5 @@ export function blockedBy(stars: Stars, id: string): LevelDef | null {
   if (isUnlocked(stars, id)) return null;
   const level = LEVELS.find((l) => l.id === id)!;
   const same = levelsOf(level.island);
-  return same[same.findIndex((l) => l.id === id) - 1];
+  return same[same.findIndex((l) => l.id === id) - 1] ?? null;
 }
