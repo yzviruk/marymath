@@ -1,0 +1,262 @@
+.ph-grow {
+  flex-grow: 1;
+}
+.ph-unit {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.ph-body {
+  flex-grow: 1;
+  min-height: 0;
+  display: flex;
+  gap: 24px;
+}
+
+/* The room (from design/project/PetHome.dc.html). */
+.ph-room {
+  position: relative;
+  width: 740px;
+  flex-shrink: 0;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #ffe9d6;
+}
+.ph-floor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 440px;
+  bottom: 0;
+  background: #ebcb9f;
+  border-top: 12px solid #d9ae7a;
+}
+.ph-window {
+  position: absolute;
+  left: 56px;
+  top: 64px;
+  width: 180px;
+  height: 150px;
+  border-radius: 20px;
+  border: 10px solid #fff;
+  background: #bfe3ff;
+  overflow: hidden;
+}
+.ph-window i {
+  position: absolute;
+  left: 70px;
+  top: 0;
+  width: 10px;
+  height: 150px;
+  background: #fff;
+}
+.ph-window b {
+  position: absolute;
+  left: 18px;
+  top: 26px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: #ffd45c;
+}
+.ph-plate {
+  position: absolute;
+  left: 270px;
+  top: 40px;
+  min-width: 200px;
+  height: 52px;
+  padding: 0 8px 0 20px;
+  border-radius: 26px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 0 #f0d2b4;
+  font-size: 26px;
+  font-weight: 900;
+}
+.ph-plate button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ph-plate svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ph-plate input {
+  width: 180px;
+  height: 40px;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  font: inherit;
+  font-size: 22px;
+  text-align: center;
+}
+.ph-say {
+  position: absolute;
+  left: 470px;
+  top: 120px;
+  width: 240px;
+  background: #fff;
+  font-size: 19px;
+  line-height: 24px;
+}
+.ph-rug {
+  position: absolute;
+  left: 190px;
+  top: 520px;
+  width: 360px;
+  height: 90px;
+  border-radius: 50%;
+  background: #8fc9f0;
+}
+.ph-rug i {
+  position: absolute;
+  left: 40px;
+  top: 8px;
+  width: 280px;
+  height: 66px;
+  border-radius: 50%;
+  border: 4px dashed #fff;
+  box-sizing: border-box;
+}
+.ph-pet {
+  position: absolute;
+  left: 240px;
+  top: 300px;
+  pointer-events: none;
+}
+.ph-thing {
+  position: absolute;
+  border: 0;
+  padding: 0;
+  background: none;
+  line-height: 0;
+}
+.ph-thing:active {
+  transform: scale(0.95);
+}
+
+/* The shop. */
+.ph-shop {
+  flex-grow: 1;
+  min-width: 0;
+  border-radius: 32px;
+  background: #fff;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 6px 0 #d3e0f5;
+}
+.ph-shop-title {
+  font-size: 26px;
+  font-weight: 900;
+}
+.ph-tabs {
+  display: flex;
+  gap: 8px;
+}
+.ph-tabs button {
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 24px;
+  background: #f2f6fd;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 900;
+}
+.ph-tabs button[aria-selected='true'] {
+  background: var(--accent);
+  color: #fff;
+}
+.ph-grid {
+  flex-grow: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: 12px;
+  padding-bottom: 4px;
+}
+.ph-card {
+  border-radius: 22px;
+  background: #f7faff;
+  border: 3px solid #e3eaf7;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.ph-card.on {
+  background: #eaf7f0;
+  border-color: var(--success);
+}
+.ph-card.locked {
+  border-style: dashed;
+  border-color: #c9d6ee;
+}
+.ph-name {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 900;
+}
+.ph-card button {
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 22px;
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ph-price {
+  background: #ffb43c;
+  color: #3a2400;
+}
+.ph-use {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+.ph-on {
+  background: none;
+  color: #0f6b41;
+}
+.ph-note {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.ph-confirm {
+  display: flex;
+  gap: 8px;
+}
+.ph-card .ph-yes {
+  background: var(--success);
+  color: #fff;
+}
+.ph-card .ph-no {
+  background: #f2f6fd;
+  color: var(--muted);
+}

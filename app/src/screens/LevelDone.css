@@ -106,3 +106,18 @@
   font-size: 22px;
   font-weight: 900;
 }
+
+.ld-rare {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 20px;
+  background: #fff4d6;
+  border: 3px solid #ffd45c;
+  font-size: 18px;
+  font-weight: 800;
+}
+.ld-rare b {
+  color: #9a5b00;
+}

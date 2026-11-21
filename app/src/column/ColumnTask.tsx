@@ -45,6 +45,8 @@ interface Props {
   task: Task;
   pet: PetKind;
   petName: string;
+  /** Clothes the pet wears (engine/shop.ts `wornIds`). */
+  petWear?: string[];
   diskMode: DiskMode;
   /** Called on every press of «Перевірити» with a complete answer. */
   onCheck: (r: CheckRecord) => void;
@@ -55,7 +57,7 @@ interface Props {
 type Phase = 'solve' | 'solved' | 'explain' | 'explained';
 
 /** One column task: free solving, then hint → explanation → done (the agreed 3 steps). */
-export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Props) {
+export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onDone }: Props) {
   const column = task.column!;
   const [input, setInput] = useState<ColumnInput>(() => initialInput(column));
   const [phase, setPhase] = useState<Phase>('solve');
@@ -239,7 +241,7 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
             onCarry={(p) => solving && setInput((s) => toggleCarry(s, p))}
           />
           <div className="ct-pet">
-            <Pet kind={pet} size={72} label={petName} />
+            <Pet kind={pet} size={72} label={petName} wear={petWear} />
             <div className={`bubble${explaining ? ' explain' : ''}`} role="status" aria-live="polite">
               {bubble}
             </div>

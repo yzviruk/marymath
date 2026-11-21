@@ -24,6 +24,12 @@ export interface Profile {
   levelStars?: Record<string, number>;
   /** The level finished last — «Продовжити» on the map stays on its island. */
   lastLevel?: string;
+  /** Shop: things the child has (bought or got from a boss), item ids from engine/shop.ts. */
+  owned?: string[];
+  /** Clothes on the pet, one per slot. */
+  worn?: Partial<Record<'head' | 'ear' | 'eyes' | 'neck', string>>;
+  /** Toys and room things the child put away. */
+  hidden?: string[];
 }
 
 /** One press of «Перевірити». */

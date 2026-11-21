@@ -5,8 +5,10 @@ import { reviewTasks, saveAttempt } from '../data/attempts';
 import { FactTask } from '../facts/FactTask';
 import type { FactMode } from '../facts/texts';
 import { addCoins, recordLevelStars } from '../data/profiles';
+import { grantItem } from '../data/shop';
 import type { Profile } from '../data/types';
 import { getLevel, ISLANDS, LEVELS } from '../engine/levels';
+import { rareItemFor, wornIds } from '../engine/shop';
 import { randomSeed } from '../engine/rng';
 import { buildLevel, similarTask, TASKS_PER_LEVEL } from '../engine/session';
 import type { Task } from '../engine/types';
@@ -59,7 +61,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
   const [index, setIndex] = useState(0);
   const [results, setResults] = useState<Outcome[]>([]);
   const [earned, setEarned] = useState(0);
-  const [finished, setFinished] = useState<{ stars: number; right: number; bonus: number } | null>(null);
+  const [finished, setFinished] = useState<{ stars: number; right: number; bonus: number; rare: string | null } | null>(null);
 
   // Build the level (with yesterday's mistakes of this island mixed in).
   useEffect(() => {
@@ -102,6 +104,8 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
     return (
       <LevelDone
         pet={profile.pet}
+        petWear={wornIds(profile.worn)}
+        rareItem={finished.rare}
         title={title}
         right={finished.right}
         stars={finished.stars}
@@ -158,8 +162,11 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
     const bonus = stars > 0 ? LEVEL_BONUS : 0;
     if (bonus) await addCoins(profile.id, bonus);
     await recordLevelStars(profile.id, levelId, stars);
+    // The first passed boss of an island gives its rare thing.
+    const rare = level.boss && stars > 0 ? rareItemFor(level.island) : null;
+    const got = rare ? await grantItem(profile.id, rare.id) : null;
     await onProfileChanged();
-    setFinished({ stars, right, bonus });
+    setFinished({ stars, right, bonus, rare: got && rare ? rare.id : null });
   }
 
   return (
@@ -191,6 +198,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
           task={slot.task}
           pet={profile.pet}
           petName={profile.petName}
+          petWear={wornIds(profile.worn)}
           diskMode={diskModes[index] ?? (level.boss ? 'none' : 'show')}
           onCheck={record}
           onDone={done}
@@ -201,6 +209,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
           task={slot.task}
           pet={profile.pet}
           petName={profile.petName}
+          petWear={wornIds(profile.worn)}
           mode={modes[index] ?? 'abstract'}
           onCheck={record}
           onDone={done}

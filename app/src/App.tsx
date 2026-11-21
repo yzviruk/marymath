@@ -5,6 +5,7 @@ import { UpdatePrompt } from './pwa/UpdatePrompt';
 import { useRouter } from './router';
 import { LevelsPreview } from './screens/LevelsPreview';
 import { MapScreen } from './screens/MapScreen';
+import { PetHome } from './screens/PetHome';
 import { StubScreen } from './screens/StubScreen';
 import { LevelRun } from './screens/LevelRun';
 import { WhoPlays } from './screens/WhoPlays';
@@ -67,13 +68,7 @@ export function App() {
         break;
       case 'petHome':
         screen = (
-          <StubScreen
-            title="Будиночок і магазин"
-            text={`${profile!.petName} чекає на будиночок. Він зʼявиться на етапі гейміфікації.`}
-            pet={profile!.pet}
-            backLabel="Карта"
-            onBack={back}
-          />
+          <PetHome profile={profile!} onBack={back} onChanged={reload} />
         );
         break;
       case 'parent':

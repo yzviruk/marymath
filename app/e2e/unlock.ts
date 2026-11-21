@@ -46,3 +46,30 @@ export async function unlockLevel(page: Page, id: string) {
   );
   await page.reload();
 }
+
+/** Sets fields of every profile (coins, owned things …) straight in IndexedDB, then reloads. */
+export async function patchProfile(page: Page, fields: Record<string, unknown>) {
+  await page.evaluate(
+    (patch) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('marymath');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction('profiles', 'readwrite');
+          const store = tx.objectStore('profiles');
+          const all = store.getAll();
+          all.onsuccess = () => {
+            for (const p of all.result) store.put({ ...p, ...patch });
+          };
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        };
+      }),
+    fields,
+  );
+  await page.reload();
+}

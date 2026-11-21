@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { unlockLevel } from './unlock';
+import { patchProfile, unlockLevel } from './unlock';
 
 async function createProfile(page: Page, name = 'Марія') {
   await page.goto('./');
@@ -200,6 +200,45 @@ test('map: islands fit the sea, passing a level opens the next, «Продовж
   await expect(page.getByRole('button', { name: 'Рівень +2', exact: true })).toBeVisible();
   await expect(page.locator('[data-island="add"] .map-sign')).toContainText('1 / 8');
   await expect(page.locator('.map-continue')).toContainText('Додавання · Рівень +2');
+});
+
+test('shop: buy with a confirm, wear, see the clothes on the map', async ({ page }) => {
+  await createProfile(page);
+  await patchProfile(page, { coins: 50 });
+  await page.getByRole('button', { name: 'Будиночок' }).click();
+  await expect(page.getByText('200 · ще 150')).toBeVisible(); // the crown is too dear
+  await page.getByRole('button', { name: 'Купити: Бантик, 15 монеток' }).click();
+  await expect(page.getByText('Купити за 15?')).toBeVisible();
+  await page.getByRole('button', { name: 'Так' }).click();
+  await expect(page.getByRole('status')).toHaveText('Дякую за бантик! Пограємо?');
+  await expect(page.locator('.coins')).toContainText('35');
+  await expect(page.getByRole('button', { name: 'Зняти: Бантик' })).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Іграшки' }).click();
+  await page.getByRole('button', { name: 'Купити: Мʼячик, 10 монеток' }).click();
+  await page.getByRole('button', { name: 'Так' }).click();
+  await expect(page.locator('.ph-room').getByRole('button', { name: 'Мʼячик' })).toBeVisible();
+  await page.getByRole('button', { name: 'Сховати: Мʼячик' }).click();
+  await expect(page.locator('.ph-room').getByRole('button', { name: 'Мʼячик' })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Перейменувати улюбленця' }).click();
+  await page.getByLabel('Імʼя улюбленця').fill('Зефір');
+  await page.getByLabel('Імʼя улюбленця').press('Enter');
+  await expect(page.locator('.ph-plate')).toContainText('Зефір');
+
+  await page.getByRole('button', { name: 'Карта' }).click();
+  await expect(page.locator('.map-who svg')).toHaveAttribute('data-wear', 'bow');
+  await expect(page.locator('.coins')).toContainText('25');
+});
+
+test('a passed boss gives its rare thing once', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '+♛');
+  for (let i = 0; i < 10; i++) await solveCurrent(page);
+  await expect(page.getByText('Нова рідкісна річ!')).toBeVisible();
+  await page.getByRole('button', { name: 'Карта' }).click();
+  await page.getByRole('button', { name: 'Будиночок' }).click();
+  await expect(page.getByRole('button', { name: 'Вдягти: Лісовий віночок' })).toBeVisible();
 });
 
 test('PWA manifest is served',async ({ request }) => {

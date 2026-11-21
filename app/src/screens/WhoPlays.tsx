@@ -3,6 +3,7 @@ import { CoinIcon, LockIcon, PlusIcon, StarIcon } from '../components/Icons';
 import { Pet } from '../components/Pet';
 import { createProfile, MAX_NAME_LENGTH, MAX_PROFILES, ProfileError } from '../data/profiles';
 import { PET_KINDS, PET_LABELS, type PetKind, type Profile } from '../data/types';
+import { wornIds } from '../engine/shop';
 import './WhoPlays.css';
 
 interface Props {
@@ -36,7 +37,7 @@ export function WhoPlays({ profiles, onPick, onCreated, onParent }: Props) {
           {profiles.map((p) => (
             <button key={p.id} type="button" className="who-card" onClick={() => onPick(p.id)}>
               <span className="who-avatar">
-                <Pet kind={p.pet} size={compact ? 104 : 150} label="" />
+                <Pet kind={p.pet} size={compact ? 104 : 150} label="" wear={wornIds(p.worn)} />
               </span>
               <span className="who-name">{p.name}</span>
               <span className="who-stats">

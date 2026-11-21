@@ -53,6 +53,8 @@ import './FactTask.css';
 interface Props {
   task: Task;
   pet: PetKind;
+  /** Clothes the pet wears (engine/shop.ts `wornIds`). */
+  petWear?: string[];
   petName: string;
   mode: FactMode;
   onCheck: (r: CheckRecord) => void;
@@ -68,7 +70,7 @@ interface ExplainState {
 }
 
 /** One × or : task: pictures by the C → P → A stage, then hint → explanation → similar task. */
-export function FactTask({ task, pet, petName, mode, onCheck, onDone }: Props) {
+export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }: Props) {
   const blanks = task.answers.length;
   const picture = task.picture;
   const compose = task.kind === 'div-compose';
@@ -398,7 +400,7 @@ export function FactTask({ task, pet, petName, mode, onCheck, onDone }: Props) {
       <NumberLine path={line.path} labels={line.labels} />
       <div className="ct-body">
         {panelExplain ? (
-          <ExplainPanel task={task} ex={ex} pet={pet} petName={petName} bubble={bubble} onStep={goStep} />
+          <ExplainPanel task={task} ex={ex} pet={pet} petName={petName} petWear={petWear} bubble={bubble} onStep={goStep} />
         ) : (
           <div className="panel ct-main ft-main">
             <div className="ft-cond">
@@ -425,7 +427,7 @@ export function FactTask({ task, pet, petName, mode, onCheck, onDone }: Props) {
               />
             </div>
             <div className="ct-pet ft-pet">
-              <Pet kind={pet} size={64} label={petName} />
+              <Pet kind={pet} size={64} label={petName} wear={petWear} />
               <div className="bubble" role="status" aria-live="polite">
                 {bubble}
               </div>
@@ -502,12 +504,13 @@ interface ExplainProps {
   ex: ExplainState;
   pet: PetKind;
   petName: string;
+  petWear?: string[];
   bubble: string;
   onStep: (step: 0 | 1 | 2) => void;
 }
 
 /** Steps 1–2 of the explanation over the whole width; step 3 is the task screen again. */
-function ExplainPanel({ task, ex, pet, petName, bubble, onStep }: ExplainProps) {
+function ExplainPanel({ task, ex, pet, petName, petWear, bubble, onStep }: ExplainProps) {
   const { model, step } = ex;
   const { picture, fact } = model;
   const theme = themeOf(picture, fact.op);
@@ -581,7 +584,7 @@ function ExplainPanel({ task, ex, pet, petName, bubble, onStep }: ExplainProps) 
           </>
         )}
         <div className="ct-pet ft-pet ft-ex-pet">
-          <Pet kind={pet} size={88} label={petName} />
+          <Pet kind={pet} size={88} label={petName} wear={petWear} />
           <div className="bubble" role="status" aria-live="polite">
             {bubble}
           </div>

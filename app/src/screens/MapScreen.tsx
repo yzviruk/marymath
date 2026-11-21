@@ -5,6 +5,7 @@ import type { Profile } from '../data/types';
 import { ISLANDS, type LevelDef } from '../engine/levels';
 import { blockedBy, continueLevel, currentLevel, isPassed, isUnlocked, levelsOf, passedCount, tasksIslandOpen } from '../engine/progress';
 import type { IslandId } from '../engine/types';
+import { wornIds } from '../engine/shop';
 import { ISLAND_ART, SEA_ART, TASKS_ART } from './mapArt';
 import './MapScreen.css';
 
@@ -83,6 +84,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }
   const next = continueLevel(stars, profile.lastLevel);
   const [say, setSay] = useState<string | null>(null);
   const tasksOpen = tasksIslandOpen(stars);
+  const wear = wornIds(profile.worn);
 
   function tapLocked(l: LevelDef) {
     const need = blockedBy(stars, l.id);
@@ -94,7 +96,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }
       <h1 className="sr-only">Карта островів</h1>
       <div className="map-top">
         <button type="button" className="map-who" onClick={onSwitchChild} aria-label="Змінити гравця">
-          <Pet kind={profile.pet} size={54} label="" />
+          <Pet kind={profile.pet} size={54} label="" wear={wear} />
         </button>
         <span className="map-name">{profile.name}</span>
         <span className="map-grow" />
@@ -171,7 +173,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }
 
                 {petHere && (
                   <div className="map-pet-here" style={{ left: petHere[0], top: petHere[1] }}>
-                    <Pet kind={profile.pet} size={PET} label="" />
+                    <Pet kind={profile.pet} size={PET} label="" wear={wear} />
                   </div>
                 )}
 
@@ -230,7 +232,7 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome }
             <div className="bubble" role="status">
               {say ?? `Привіт, ${profile.name}! ${next ? 'Тисни «Грати» або обери рівень на карті.' : 'Ти молодець!'}`}
             </div>
-            <Pet kind={profile.pet} size={130} label={profile.petName} />
+            <Pet kind={profile.pet} size={130} label={profile.petName} wear={wear} />
           </div>
         </div>
       </div>

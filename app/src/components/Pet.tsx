@@ -1,20 +1,24 @@
 import type { PetKind } from '../data/types';
 import { PET_LABELS } from '../data/types';
+import { PetClothes } from './ShopArt';
 
 interface Props {
   kind: PetKind;
   size?: number;
   /** Accessible name; defaults to the pet species. Pass '' to hide from screen readers. */
   label?: string;
+  /** Clothes from the shop, in drawing order (engine/shop.ts `wornIds`). */
+  wear?: string[];
 }
 
 /** Original pet characters, ported 1:1 from design/project/Pet.dc.html. */
-export function Pet({ kind, size = 200, label }: Props) {
+export function Pet({ kind, size = 200, label, wear }: Props) {
   const name = label ?? PET_LABELS[kind];
   const a11y = name ? { role: 'img', 'aria-label': name } : { 'aria-hidden': true as const };
   return (
-    <svg viewBox="0 0 120 120" width={size} height={size} {...a11y}>
+    <svg viewBox="0 0 120 120" width={size} height={size} overflow="visible" data-wear={wear?.join(' ') || undefined} {...a11y}>
       {SHAPES[kind]}
+      {wear?.length ? <PetClothes kind={kind} ids={wear} /> : null}
     </svg>
   );
 }

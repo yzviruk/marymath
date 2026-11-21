@@ -1,10 +1,15 @@
 import { CoinIcon } from '../components/Icons';
 import { Pet } from '../components/Pet';
+import { ItemIcon } from '../components/ShopArt';
 import type { PetKind } from '../data/types';
+import { getItem } from '../engine/shop';
 import './LevelDone.css';
 
 interface Props {
   pet: PetKind;
+  petWear?: string[];
+  /** A rare shop thing the boss just gave (first pass only). */
+  rareItem?: string | null;
   title: string;
   right: number;
   stars: number;
@@ -19,14 +24,14 @@ interface Props {
 const STAR = 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z';
 
 /** Simple level result (screen 6); stickers and the pet's dance come in stage 5. */
-export function LevelDone({ pet, title, right, stars, coins, bonus, nextLabel, onAgain, onNext, onMap }: Props) {
+export function LevelDone({ pet, petWear, rareItem, title, right, stars, coins, bonus, nextLabel, onAgain, onNext, onMap }: Props) {
   const passed = stars > 0;
   return (
     <div className="screen ld">
       <div className="panel ld-card">
         <div className="ld-pet">
           <div className="ld-pet-circle">
-            <Pet kind={pet} size={220} label="" />
+            <Pet kind={pet} size={220} label="" wear={petWear} />
           </div>
           <div className="bubble">{passed ? 'Ура! Я так тобою пишаюся!' : 'Ти молодець, що старалась! Спробуймо ще раз?'}</div>
         </div>
@@ -50,6 +55,14 @@ export function LevelDone({ pet, title, right, stars, coins, bonus, nextLabel, o
               <span>{passed ? (stars < 3 ? `наступна зірка — за ${stars === 1 ? 9 : 10} з 10` : 'усі зірки!') : 'для зірки потрібно 7 з 10'}</span>
             </div>
           </div>
+          {rareItem && (
+            <div className="ld-rare" role="status">
+              <ItemIcon id={rareItem} size={56} />
+              <span>
+                <b>Нова рідкісна річ!</b> {getItem(rareItem)?.name} — шукай у будиночку.
+              </span>
+            </div>
+          )}
           <div className="ld-coins">
             <CoinIcon size={32} />
             <b>+{coins}</b>
