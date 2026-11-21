@@ -26,7 +26,7 @@
 
 ## Етапи
 0 Дизайн (погоджено) → 1 Каркас (зроблено 20.11.2026) → 2 Генератори + тести (зроблено) →
-3 Стовпчик (зроблено) → 4 × і : (код готовий 21.11.2026, чекає проби з Марією) → 5 Гейміфікація → 6 Статистика/батьки → 7 Реліз.
+3 Стовпчик (зроблено) → 4 × і : (зроблено 21.11.2026, проба з Марією пройшла добре) → 5 Гейміфікація (наступний) → 6 Статистика/батьки → 7 Реліз.
 
 ## Робочі правила
 - Спочатку погодження з користувачем, потім імплементація. Кожен етап: короткий план → «погоджую» → код → тести → push → оновити план (чекліст у кінці розділу «Дизайн у Claude Design»), CLAUDE.md і пам'ять.
@@ -35,12 +35,13 @@
   Публікація в полотно: спершу `read` артефакту (без `path`), інакше відмова «haven't viewed the latest version».
 - Windows: імена файлів не чутливі до регістру — не створювати `foo.ts` поруч із `Foo.tsx`. Файли з лапками/апострофами писати Write, не bash-heredoc.
 - Перевірка вигляду: `npm run build && npm run preview` (порт 4173) + скриншоти Playwright у scratchpad; після — зупинити сервер.
+  Playwright перевикористовує сервер на 4173 (`reuseExistingServer`) — якщо там висить старий preview, e2e тестують старий збір; спершу зупинити його.
 
 ## Карта коду (`app/src/`)
 - `engine/` — чиста логіка без React: `levels.ts` (усі рівні й боси), `tasks.ts` (форми завдань: column, fact, repeated-add, commutative, div-compose, fact-family; `Task.lines` з blank-ами), `check.ts` (`isCorrect`, `classifyError`), `session.ts` (`buildLevel`, `similarTask`), `column.ts`, `describe.ts`.
 - `column/` — екран стовпчика: `columnInput.ts` (стан введення), `texts.ts` (репліки й кроки пояснення), `disks.ts` + `DiskPanel.tsx` (кружечки, drag), `ColumnBoard.tsx`, `ColumnTask.tsx` (3 кроки помилки).
 - `facts/` — екран × і :: `FactTask.tsx` (етапи C/P/A, помилка в 3 кроки, `ExplainPanel` — кроки 1–2 на всю ширину, крок 3 — знову екран завдання), `Pictures.tsx` (коробки, масив з поворотом, кошики з перетягуванням, групи торканням, `BarModel`, `Triangle`, `WideLine` 0–35), `Equation.tsx` (віконця), `factInput.ts` (введення, :3 — торкання чисел), `objects.ts` (кошики, групи), `texts.ts` (умови, підказки, `explanation`), `words.ts` (відмінки після числа).
-- `screens/` — `WhoPlays`, `MapScreen` (тимчасова карта: усі рівні 4 островів відкриті для проби), `LevelRun` (10 завдань, монетки 3/1/1, бонус 5, зірки 7/9/10, повтор учорашніх помилок через `LevelDef.rebuild`; `ColumnTask` або `FactTask`; режими × і : — `factModes`), `LevelDone`, `LevelsPreview` (батьки → «Приклади рівнів»), `StubScreen`.
+- `screens/` — `WhoPlays`, `MapScreen` (тимчасова карта-сітка з 5 колонок, рівні по 3 в ряд, щоб вміщалось у 1280; усі рівні 4 островів відкриті для проби), `LevelRun` (10 завдань, монетки 3/1/1, бонус 5, зірки 7/9/10, повтор учорашніх помилок через `LevelDef.rebuild`; `ColumnTask` або `FactTask`; режими × і : — `factModes`), `LevelDone`, `LevelsPreview` (батьки → «Приклади рівнів»), `StubScreen`.
 - `components/` — `NumberLine` + `lineGeometry.ts` (дуги, `multiplicationPath`, `divisionPath`, `bridgeTenPath`, `bridgeBackPath`), `Keypad`, `Pet`, `Icons`.
 - `data/` — IndexedDB v2 (`profiles`, `meta`, `attempts`); `profiles.ts` (`addCoins`, `recordLevelStars`), `attempts.ts` (`saveAttempt`, `reviewTasks`).
 - Маршрути: `router.ts` (history state, жест «назад» Android).
