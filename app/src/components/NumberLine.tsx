@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { playJumps } from '../sound/sound';
 import { buildArcs, LINE_HEIGHT, LINE_MAX, LINE_MIN, LINE_WIDTH, xOf, type ArcLabelMode } from './lineGeometry';
 import './NumberLine.css';
 
@@ -14,6 +16,11 @@ export function NumberLine({ path = [], labels = 'delta' }: Props) {
   const arcs = buildArcs(path, labels);
   const landed = new Set(arcs.flatMap((a) => [a.from, a.to]));
   const dots = arcs.map((a) => a.to);
+  const jumps = arcs.length;
+  const key = path.join(',');
+  useEffect(() => {
+    if (jumps) playJumps(jumps);
+  }, [key, jumps]);
   const aria =
     arcs.length > 0 ? `Числова шкала від 0 до 20, стрибки: ${path.join(' → ')}` : 'Числова шкала від 0 до 20';
 

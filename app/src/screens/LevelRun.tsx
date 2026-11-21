@@ -118,6 +118,7 @@ export function LevelRun({ profile, levelId, onExit, onNextLevel, onProfileChang
         petWear={wornIds(profile.worn)}
         rareItem={finished.rare}
         newStickers={finished.stickers}
+        boss={!!level.boss}
         title={title}
         right={finished.right}
         stars={finished.stars}

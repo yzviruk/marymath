@@ -15,6 +15,8 @@ interface Props {
   onOpenLevel: (levelId: string) => void;
   onOpenPetHome: () => void;
   onOpenAlbum: () => void;
+  music: boolean;
+  onToggleMusic: () => void;
 }
 
 type ActionIsland = 'add' | 'sub' | 'mul' | 'div';
@@ -87,7 +89,7 @@ const islandName = (id: IslandId) => ISLANDS.find((i) => i.id === id)!.name;
  * The island map: four islands with paths of levels, the Задачі castle, «Продовжити».
  * Opening rules live in engine/progress.ts.
  */
-export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, onOpenAlbum }: Props) {
+export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, onOpenAlbum, music, onToggleMusic }: Props) {
   const stars = profile.levelStars ?? {};
   const opened = profile.openIslands ?? [];
   const next = continueLevel(stars, profile.lastLevel, opened);
@@ -145,6 +147,18 @@ export function MapScreen({ profile, onSwitchChild, onOpenLevel, onOpenPetHome, 
         </button>
         <span className="map-name">{profile.name}</span>
         <span className="map-grow" />
+        <button
+          type="button"
+          className={`map-music${music ? '' : ' off'}`}
+          aria-label={music ? 'Вимкнути музику' : 'Увімкнути музику'}
+          aria-pressed={music}
+          onClick={onToggleMusic}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h4l5 4V5L8 9z" />
+            {music ? <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /> : <path d="M17 9l5 6M22 9l-5 6" />}
+          </svg>
+        </button>
         <span className="map-chip" aria-label={`Зірки: ${profile.stars}`}>
           <StarIcon size={26} />
           <b>{profile.stars}</b>

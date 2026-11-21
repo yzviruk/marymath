@@ -5,6 +5,7 @@ import { ItemIcon } from '../components/ShopArt';
 import { MAX_NAME_LENGTH, ProfileError, updateProfile } from '../data/profiles';
 import { buyItem, setHidden, setWorn } from '../data/shop';
 import { syncStickers } from '../data/stickers';
+import { playSfx } from '../sound/sound';
 import type { Profile } from '../data/types';
 import { ISLANDS } from '../engine/levels';
 import { SHOP, wornIds, type ShopItem, type ShopTab } from '../engine/shop';
@@ -65,7 +66,9 @@ export function PetHome({ profile, onBack, onChanged }: Props) {
 
   async function buyAndStick(itemId: string) {
     await buyItem(profile.id, itemId);
+    playSfx('buy');
     const { added } = await syncStickers(profile.id);
+    if (added.length) playSfx('sticker', 0.6);
     return added.length ? 'І ще нова наліпка в альбомі!' : undefined;
   }
 

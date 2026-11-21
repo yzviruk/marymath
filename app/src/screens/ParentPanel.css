@@ -471,3 +471,8 @@
 .pp-journal td.bad {
   color: #a3283e;
 }
+
+.pp-vol {
+  width: 110px;
+  accent-color: var(--accent);
+}

@@ -2,7 +2,7 @@ import { getDb } from './db';
 import { ProfileError } from './profiles';
 import type { Attempt, Profile } from './types';
 
-/** Settings of the parent panel (stored in `meta`). Sounds and music come in stage 6b. */
+/** Settings of the parent panel (stored in `meta`). */
 export interface Settings {
   sound: boolean;
   music: boolean;
@@ -12,7 +12,7 @@ export interface Settings {
   speech: boolean;
 }
 
-export const DEFAULT_SETTINGS: Settings = { sound: true, music: true, musicVolume: 45, speech: true };
+export const DEFAULT_SETTINGS: Settings = { sound: true, music: true, musicVolume: 40, speech: true };
 
 export async function getSettings(): Promise<Settings> {
   const stored = (await (await getDb()).get('meta', 'settings')) as Partial<Settings> | undefined;

@@ -25,6 +25,7 @@ import { DiskPanel } from './DiskPanel';
 import { disksAt } from './disks';
 import { coachLine, explainIntro, isLeadingZero, PLACE_GEN, placeJumps, placeStep } from './texts';
 import { taskCoins } from '../engine/rewards';
+import { playSfx } from '../sound/sound';
 import './ColumnTask.css';
 
 export type Outcome = 'first' | 'second' | 'explained';
@@ -99,6 +100,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
       } else {
         setWrong([explainPlace]);
         setShakeKey((k) => k + 1);
+        playSfx('again');
         setSay(`Ще раз: ${placeStep(column, explainPlace)}`);
       }
     }
@@ -132,6 +134,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
       const coins = taskCoins(tries === 0 && !hintUsed, false);
       setOutcome({ outcome: tries === 0 ? 'first' : 'second', coins });
       setPhase('solved');
+      playSfx('correct');
       setWrong([]);
       setJumpPlace(null);
       const reminders: string[] = [];
@@ -148,6 +151,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
       const bad = wrongPlaces(input, column);
       setWrong(bad);
       setShakeKey((k) => k + 1);
+      playSfx('again');
       const first = bad[0] ?? 0;
       setInput((s) => focus(s, { kind: 'answer', place: first }));
       setSay(`Майже! Перевір розряд ${PLACE_GEN[first]}.`);
@@ -156,6 +160,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
     // Step 2: the explanation of this very task, place by place.
     setErrorKind(error ?? 'other');
     setPhase('explain');
+    playSfx('again');
     const fresh = { ...initialInput(column), cursor: null };
     advanceExplain(fresh, 0, explainIntro(error ?? 'other'));
   }
@@ -172,6 +177,7 @@ export function ColumnTask({ task, pet, petName, petWear, diskMode, onCheck, onD
       setJumpPlace(null);
       setExplainPlace(p);
       setPhase('explained');
+      playSfx('correct');
       setOutcome({ outcome: 'explained', coins: 0 });
       setSay(`Ось так! ${column.a} ${column.op} ${column.b} = ${column.result}. Тепер схожий приклад.`);
       return;

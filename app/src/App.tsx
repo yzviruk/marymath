@@ -11,6 +11,7 @@ import { ParentGate } from './screens/ParentGate';
 import { ParentPanel } from './screens/ParentPanel';
 import { DEFAULT_SETTINGS, getSettings, saveSettings, type Settings } from './data/parent';
 import { SettingsContext } from './SettingsContext';
+import { installSound, setMusicMode, setSoundSettings } from './sound/sound';
 import { LevelRun } from './screens/LevelRun';
 import { WhoPlays } from './screens/WhoPlays';
 import { Stage } from './Stage';
@@ -24,7 +25,17 @@ export function App() {
   useEffect(() => {
     void reload();
     void getSettings().then(setSettings);
+    installSound();
   }, [reload]);
+  useEffect(() => setSoundSettings(settings), [settings]);
+  // Music on the map and in the home and album; quieter in a level; none elsewhere.
+  useEffect(() => {
+    setMusicMode(['map', 'petHome', 'album'].includes(route.name) ? 'normal' : route.name === 'level' ? 'quiet' : 'off');
+  }, [route.name]);
+  const changeSettings = useCallback(async (patch: Partial<Settings>) => {
+    setSettings((s) => ({ ...s, ...patch }));
+    await saveSettings(patch);
+  }, []);
 
   const profile = 'profileId' in route ? profiles?.find((p) => p.id === route.profileId) : undefined;
   const toMap = (id: string) => go({ name: 'map', profileId: id });
@@ -59,6 +70,8 @@ export function App() {
             onOpenLevel={(levelId) => go({ name: 'level', profileId: profile!.id, levelId })}
             onOpenPetHome={() => go({ name: 'petHome', profileId: profile!.id })}
             onOpenAlbum={() => go({ name: 'album', profileId: profile!.id })}
+            music={settings.music}
+            onToggleMusic={() => changeSettings({ music: !settings.music })}
           />
         );
         break;
@@ -93,10 +106,7 @@ export function App() {
             onAddProfile={() => reset({ name: 'who', create: true })}
             onPreview={() => go({ name: 'levels' })}
             onChanged={reload}
-            onSettings={async (patch) => {
-              setSettings((s) => ({ ...s, ...patch }));
-              await saveSettings(patch);
-            }}
+            onSettings={changeSettings}
           />
         );
         break;

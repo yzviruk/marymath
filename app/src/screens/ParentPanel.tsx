@@ -229,6 +229,17 @@ export function ParentPanel({ profiles, onExit, onAddProfile, onPreview, onChang
           <input type="checkbox" checked={settings.music} onChange={(e) => onSettings({ music: e.target.checked })} />
           Музика
         </label>
+        <input
+          type="range"
+          className="pp-vol"
+          min={0}
+          max={100}
+          step={5}
+          value={settings.musicVolume}
+          aria-label="Гучність музики"
+          disabled={!settings.music}
+          onChange={(e) => onSettings({ musicVolume: Number(e.target.value) })}
+        />
         <label>
           <input type="checkbox" checked={settings.speech} onChange={(e) => onSettings({ speech: e.target.checked })} />
           Озвучення умов

@@ -48,6 +48,7 @@ import {
 } from './texts';
 import { count, GROUP } from './words';
 import { taskCoins } from '../engine/rewards';
+import { playSfx } from '../sound/sound';
 import { useSettings } from '../SettingsContext';
 import '../column/ColumnTask.css';
 import './FactTask.css';
@@ -135,6 +136,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
         });
         setWrong([c]);
         setShakeKey((k) => k + 1);
+        playSfx('again');
         setSay(`Ще раз! ${ex.model.pet[1]}`);
         return;
       }
@@ -164,6 +166,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
       if (!ok) {
         setWrong([c]);
         setShakeKey((k) => k + 1);
+        playSfx('again');
         setSay(c === 0 ? 'Ще раз! Спочатку — скільки всього.' : 'Ще раз! Подивись на малюнок.');
         return;
       }
@@ -181,6 +184,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
     setEx((e) => e && { ...e, input: { ...e.input, values, cursor: null } });
     setInput({ values, cursor: null, fresh: values.map(() => false) });
     setPhase('explained');
+    playSfx('correct');
     setOutcome({ outcome: 'explained', coins: 0 });
     setSay(`Ось так! ${solvedLine(task).replace('Правильно! ', '')} Тепер схожий приклад.`);
     const path = factPath(task.main);
@@ -237,6 +241,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
         coins: taskCoins(tries === 0 && !hintUsed, false),
       });
       setPhase('solved');
+      playSfx('correct');
       setWrong([]);
       setSay(solvedLine(task));
       if (task.kind !== 'fact-family') setLine({ path: factPath(task.main) ?? [], labels: 'count' });
@@ -250,6 +255,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
     if (tryNo === 1) {
       setWrong(bad);
       setShakeKey((k) => k + 1);
+      playSfx('again');
       setInput((s) => markWrong(s, bad));
       setSay(firstHint(task, error ?? 'other', firstWrong));
       return;
@@ -269,6 +275,7 @@ export function FactTask({ task, pet, petName, petWear, mode, onCheck, onDone }:
       },
     });
     setPhase('explain');
+    playSfx('again');
     setWrong([]);
     setLine({ path: [], labels: 'none' });
     setSay(model.pet[0]);

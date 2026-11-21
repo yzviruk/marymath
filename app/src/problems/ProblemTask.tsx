@@ -8,6 +8,7 @@ import type { PetKind } from '../data/types';
 import { classifyError } from '../engine/check';
 import { answerSentence, problemText, setupError } from '../engine/problems';
 import { taskCoins } from '../engine/rewards';
+import { playSfx } from '../sound/sound';
 import { columnTask, factTask } from '../engine/tasks';
 import type { ErrorKind, Op, Task } from '../engine/types';
 import { typeTowards } from '../facts/factInput';
@@ -83,6 +84,7 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
   const fact = op === '×' || op === ':' ? factTask(task.level, op, a, b) : null;
 
   function shake(which: ('sign' | 0 | 1 | 2)[]) {
+    playSfx('again');
     setWrong(which);
     setShakeKey((k) => k + 1);
   }
@@ -129,6 +131,7 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
 
   function maybeGuidedDone(s: Op | null, bx: (0 | 1 | null)[]) {
     if (s === op && bx[0] !== null && bx[1] !== null) {
+      playSfx('correct');
       setSay('Ось так! Тепер рахуємо.');
       toSolve();
     }
@@ -149,6 +152,7 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
     const tryNo = setupTries + 1;
     onCheck({ stage: 'setup', value: x, values: [x, y], correct: !error, error, tryNo, hintUsed, ms: Date.now() - started.current });
     if (!error) {
+      playSfx('correct');
       setSay('Правильно! Тепер рахуємо.');
       toSolve();
       return;
@@ -171,6 +175,7 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
       return;
     }
     // Second mistake: the explanation, then the child sets it up again — every tap is checked.
+    playSfx('again');
     setExplained(true);
     setShowBar(true);
     setSign(null);
@@ -235,6 +240,7 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
       setSay(firstHint(fact!, error ?? 'other', 0));
       return;
     }
+    playSfx('again');
     setExplained(true);
     setShowBar(true);
     setValue(null);
@@ -246,6 +252,8 @@ export function ProblemTask({ task, pet, petName, petWear, mode, onCheck, onDone
   }
 
   function finish() {
+    // ?1 comes back from the column screen, which already rang its bell.
+    if (stage !== 'column') playSfx('correct');
     setValue(result);
     setStage('done');
     setWrong([]);

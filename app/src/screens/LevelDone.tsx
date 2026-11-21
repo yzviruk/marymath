@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { CoinIcon } from '../components/Icons';
+import { playSfx, playStars } from '../sound/sound';
 import { Pet } from '../components/Pet';
 import { ItemIcon } from '../components/ShopArt';
 import type { PetKind } from '../data/types';
@@ -12,6 +14,8 @@ interface Props {
   petWear?: string[];
   /** A rare shop thing the boss just gave (first pass only). */
   rareItem?: string | null;
+  /** A boss level: its bells ring after the stars. */
+  boss?: boolean;
   /** Stickers glued into the album at the end of this level. */
   newStickers?: string[];
   title: string;
@@ -30,8 +34,23 @@ interface Props {
 const STAR = 'M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z';
 
 /** Simple level result (screen 6); stickers and the pet's dance come in stage 5. */
-export function LevelDone({ pet, petWear, rareItem, newStickers = [], title, right, stars, coins, bonus, levelFull, nextLabel, onAgain, onNext, onMap }: Props) {
+export function LevelDone({ pet, petWear, rareItem, newStickers = [], boss, title, right, stars, coins, bonus, levelFull, nextLabel, onAgain, onNext, onMap }: Props) {
   const passed = stars > 0;
+  // Stars ring one by one, then the coins, a new sticker, the boss — once, when the screen opens.
+  useEffect(() => {
+    playStars(stars);
+    let t = stars * 0.35 + 0.3;
+    if (coins > 0) {
+      playSfx('coin', t);
+      t += 0.5;
+    }
+    if (newStickers.length) {
+      playSfx('sticker', t);
+      t += 0.9;
+    }
+    if (boss && stars > 0) playSfx('boss', t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // A boss sticker is the one to show; the rest are «і ще N».
   const mainSticker = getSticker(newStickers.find((id) => id.startsWith('boss-')) ?? newStickers[0] ?? '');
   return (

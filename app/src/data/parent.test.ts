@@ -48,7 +48,7 @@ describe('parent panel data', () => {
   });
 
   it('settings have defaults and keep changes', async () => {
-    expect(await getSettings()).toEqual({ sound: true, music: true, musicVolume: 45, speech: true });
+    expect(await getSettings()).toEqual({ sound: true, music: true, musicVolume: 40, speech: true });
     await saveSettings({ speech: false });
     expect((await getSettings()).speech).toBe(false);
   });
