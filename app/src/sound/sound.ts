@@ -34,12 +34,26 @@ function audio(): AudioContext | null {
     ctx = new AC();
     master = ctx.createGain();
     master.gain.value = 0.8;
-    master.connect(ctx.destination);
+    // A gentle limiter: a sound over the music never clips (clipping crackles on tablet speakers).
+    const limiter = ctx.createDynamicsCompressor();
+    limiter.threshold.value = -6;
+    limiter.knee.value = 6;
+    limiter.ratio.value = 12;
+    limiter.attack.value = 0.003;
+    limiter.release.value = 0.25;
+    master.connect(limiter);
+    limiter.connect(ctx.destination);
     sfxBus = ctx.createGain();
     sfxBus.connect(master);
     musicBus = ctx.createGain();
     musicBus.gain.value = 0;
-    musicBus.connect(master);
+    // The music goes through a low-pass: no sharp overtones to buzz in small speakers.
+    const musicTone = ctx.createBiquadFilter();
+    musicTone.type = 'lowpass';
+    musicTone.frequency.value = 3200;
+    musicTone.Q.value = 0.5;
+    musicBus.connect(musicTone);
+    musicTone.connect(master);
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     const ch = noiseBuf.getChannelData(0);
     for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
@@ -166,6 +180,26 @@ export function playJumps(count: number) {
 
 // ── Music: «Острівна прогулянка», 100 bpm, 8 bars in a loop ───────────────
 
+/**
+ * A soft music note: a 20–30 ms fade-in, a decay, and a fade to exactly 0 before it stops —
+ * no clicks at either end (fast attacks on low notes were heard as knocking).
+ */
+function musicNote(f: number, at: number, d: number, type: OscillatorType, g: number, a = 0.02) {
+  const c = ctx!;
+  const o = c.createOscillator();
+  o.type = type;
+  o.frequency.setValueAtTime(f, at);
+  const v = c.createGain();
+  v.gain.setValueAtTime(0, at);
+  v.gain.linearRampToValueAtTime(g, at + a);
+  v.gain.exponentialRampToValueAtTime(g * 0.35, at + d * 0.7);
+  v.gain.linearRampToValueAtTime(0, at + d);
+  o.connect(v);
+  v.connect(musicBus);
+  o.start(at);
+  o.stop(at + d + 0.02);
+}
+
 const CHORDS: Record<string, number[]> = {
   C: [48, 60, 64, 67],
   G: [43, 59, 62, 67],
@@ -185,11 +219,11 @@ function playStep(s: number, t: number, beat: number) {
   const bar = Math.floor(s / 16) % 8;
   const inBar = s % 16;
   const ch = CHORDS[PROGRESSION[bar]];
-  if (inBar % 4 === 0) tone({ f: hz(ch[0]), at: t, d: beat * 0.875, g: 0.18, bus: musicBus });
-  if (inBar % 4 === 2) ch.slice(1).forEach((m, i) => tone({ f: hz(m), at: t + i * 0.012, d: beat * 0.625, type: 'triangle', g: 0.05, bus: musicBus }));
-  if (inBar % 2 === 1) noise({ at: t, d: 0.04, g: 0.025, type: 'highpass', f: 7000, bus: musicBus });
+  // The bass an octave up (175–260 Hz): tablet speakers rattle on the lower one.
+  if (inBar % 4 === 0) musicNote(hz(ch[0] + 12), t, beat * 0.875, 'sine', 0.13, 0.03);
+  if (inBar % 4 === 2) ch.slice(1).forEach((m, i) => musicNote(hz(m), t + i * 0.012, beat * 0.625, 'triangle', 0.045));
   const m = MELODY[inBar];
-  if (m && bar % 2 === 1) tone({ f: hz(m + (bar === 7 ? -2 : 0)), at: t, d: beat * 0.45, type: 'triangle', g: 0.07, bus: musicBus });
+  if (m && bar % 2 === 1) musicNote(hz(m + (bar === 7 ? -2 : 0)), t, beat * 0.45, 'triangle', 0.065);
 }
 
 function startLoop() {
@@ -198,7 +232,13 @@ function startLoop() {
   const sixteenth = 60 / BPM / 4;
   nextTime = c.currentTime + 0.1;
   timer = window.setInterval(() => {
-    while (nextTime < c.currentTime + 0.25) {
+    // A busy tablet can wake the timer late: skip the notes already gone instead of playing
+    // them all at once (that was heard as stumbling).
+    while (nextTime < c.currentTime + 0.02) {
+      nextTime += sixteenth;
+      step++;
+    }
+    while (nextTime < c.currentTime + 0.5) {
       playStep(step % STEPS, nextTime, sixteenth * 4);
       nextTime += sixteenth;
       step++;
