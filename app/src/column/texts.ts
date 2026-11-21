@@ -1,7 +1,7 @@
 import { bridgeBackPath, bridgeTenPath } from '../components/lineGeometry';
 import { digitCount, type ColumnInfo } from '../engine/column';
 import type { ErrorKind } from '../engine/types';
-import type { ColumnInput } from './columnInput';
+import { shownTop, type ColumnInput } from './columnInput';
 
 export const PLACE = ['Одиниці', 'Десятки', 'Сотні', 'Тисячі'];
 /** «Перевір розряд …» */
@@ -18,13 +18,13 @@ export function coachLine(s: ColumnInput, column: ColumnInfo): string {
   if (!c) return 'Готово? Натисни «Перевірити».';
   const p = column.places[c.place];
   const name = PLACE[c.place];
+  if (c.kind === 'borrow') return `Скільки тепер ${PLACE_GEN[c.place]} зверху? Впиши в кружечок.`;
   if (column.op === '+') {
     const carry = s.carry[c.place];
     const extra = carry ? ` і ще ${carry} зверху` : '';
     return `${name}: ${p.a} + ${p.b}${extra}.`;
   }
-  const top = p.a - (s.crossed[c.place] ? 1 : 0) + (s.crossed[c.place + 1] ? 10 : 0);
-  return `${name}: ${top} − ${p.b}.`;
+  return `${name}: ${shownTop(s, column, c.place)} − ${p.b}.`;
 }
 
 /** One step of the explanation for a place (step 2 of a mistake). */

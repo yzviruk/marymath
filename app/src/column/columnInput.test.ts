@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { columnAdd, columnSub } from '../engine/column';
 import {
   answerValue,
+  borrowMarksAt,
   clearAll,
   erase,
   focus,
@@ -10,8 +11,8 @@ import {
   missingCarries,
   shownTop,
   toggleCarry,
-  toggleCross,
   typeDigit,
+  wrongBorrows,
   wrongPlaces,
 } from './columnInput';
 import { coachLine, placeJumps, placeStep } from './texts';
@@ -81,14 +82,55 @@ describe('column input', () => {
     expect(wrongPlaces(s, sub)).toEqual([]);
   });
 
-  it('crosses digits to borrow and shows the new top digits (400 − 127)', () => {
-    const sub = columnSub(400, 127);
+  it('111 − 29: the child writes 11 and 0 above, then 10 and 0', () => {
+    const sub = columnSub(111, 29);
     let s = initialInput(sub);
-    expect(missingBorrows(s, sub)).toEqual([1, 2]);
-    s = toggleCross(toggleCross(s, 2), 1);
-    expect([0, 1, 2].map((p) => shownTop(s, sub, p))).toEqual([10, 9, 3]);
+    expect(missingBorrows(s, sub)).toEqual([0, 1, 2]);
+    // 0 above the tens: a digit other than 1 finishes the circle and goes back to the ones.
+    s = typeDigit(focus(s, { kind: 'borrow', place: 1 }), 0);
+    expect(s.borrow[1]).toBe(0);
+    expect(s.cursor).toEqual({ kind: 'answer', place: 0 });
+    // 11 above the ones: «1» waits for the second digit.
+    s = typeDigit(focus(s, { kind: 'borrow', place: 0 }), 1);
+    expect(s.pending).toBe(true);
+    expect(s.cursor).toEqual({ kind: 'borrow', place: 0 });
+    s = typeDigit(s, 1);
+    expect(s.borrow[0]).toBe(11);
+    expect(s.cursor).toEqual({ kind: 'answer', place: 0 });
+    expect(shownTop(s, sub, 0)).toBe(11);
+    s = typeDigit(s, 2); // 11 − 9
+    // 10 above the tens (the first digit replaces the old 0), 0 above the hundreds.
+    s = typeAll(focus(s, { kind: 'borrow', place: 1 }), [1, 0]);
+    s = typeDigit(focus(s, { kind: 'borrow', place: 2 }), 0);
+    expect(s.borrow).toEqual([11, 10, 0]);
+    expect(s.cursor).toEqual({ kind: 'answer', place: 1 });
+    s = typeAll(s, [8]);
+    expect(answerValue(s)).toBe(82);
     expect(missingBorrows(s, sub)).toEqual([]);
-    expect(clearAll(s).crossed).toEqual([false, false, false]);
+    expect(wrongBorrows(s, sub)).toEqual([]);
+    expect(clearAll(s).borrow).toEqual([null, null, null]);
+  });
+
+  it('a lone 1 stays 1 when the child taps elsewhere; ⌫ clears the circle', () => {
+    const sub = columnSub(52, 17);
+    let s = typeDigit(focus(initialInput(sub), { kind: 'borrow', place: 1 }), 1);
+    s = focus(s, { kind: 'answer', place: 0 });
+    expect(s.borrow[1]).toBe(1);
+    expect(s.pending).toBe(false);
+    s = typeDigit(s, 5); // an answer digit, not a second digit of the circle
+    expect(s.borrow[1]).toBe(1);
+    s = erase(focus(s, { kind: 'borrow', place: 1 }));
+    expect(s.borrow[1]).toBeNull();
+  });
+
+  it('borrow marks step by step and at the end (explanation and checking)', () => {
+    expect(borrowMarksAt(columnSub(111, 29), 0)).toEqual([11, 0, null]);
+    expect(borrowMarksAt(columnSub(111, 29), 1)).toEqual([11, 10, 0]);
+    expect(borrowMarksAt(columnSub(400, 127), 0)).toEqual([10, 9, 3]); // through zero at once
+    expect(borrowMarksAt(columnSub(87, 34), 1)).toEqual([null, null]);
+    const sub = columnSub(111, 29);
+    const s = { ...initialInput(sub), borrow: [11, 0, 0] };
+    expect(wrongBorrows(s, sub)).toEqual([1]); // the tens became 10 in the end
   });
 });
 

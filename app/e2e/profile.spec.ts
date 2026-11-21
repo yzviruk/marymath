@@ -99,19 +99,49 @@ test('column: a mistake goes hint → explanation → similar task', async ({ pa
   await expect(page.getByLabel('Приклад 2 з 10')).toBeVisible();
 });
 
-test('column: borrowing through zero with marks', async ({ page }) => {
+/** What the child writes above each place after borrowing (null = untouched): 111 − 29 → [11, 10, 0]. */
+function borrowMarks(a: number, b: number): (number | null)[] {
+  const da = [...String(a)].reverse().map(Number);
+  const db = [...String(b)].reverse().map(Number);
+  const marks: (number | null)[] = [];
+  let lent = 0;
+  for (let i = 0; i < da.length; i++) {
+    const out = da[i] - lent < (db[i] ?? 0) ? 1 : 0;
+    marks.push(lent || out ? da[i] - lent + 10 * out : null);
+    lent = out;
+  }
+  return marks;
+}
+
+test('column: borrowing is written in the circles above, through zero too', async ({ page }) => {
   await createProfile(page);
   await openLevel(page, '−5');
+  // Subtraction has no disk panel while solving.
+  await expect(page.locator('.dp')).toHaveCount(0);
   const t = await currentTask(page);
-  const top = String(t.a);
-  // Cross every zero and the digit that lends, as in a notebook.
-  for (const p of [...top].map((_, i) => top.length - 1 - i).filter((p) => p > 0)) {
-    const btn = page.getByRole('button', { name: new RegExp(`^${top[top.length - 1 - p]} — ${['', 'десятки', 'сотні', 'тисячі'][p]}`) });
-    if (await btn.count()) await btn.click();
+  const places = ['одиниці', 'десятки', 'сотні', 'тисячі'];
+  const marks = borrowMarks(t.a, t.b);
+  for (const [p, m] of marks.entries()) {
+    if (m === null) continue;
+    await page.getByRole('button', { name: `Позичання: ${places[p]}` }).click();
+    for (const d of String(m)) await page.getByRole('button', { name: d, exact: true }).click(); // as written: 1, then 0
+    await expect(page.getByRole('button', { name: `Позичання: ${places[p]}` })).toHaveText(String(m));
   }
+  await page.getByRole('button', { name: 'Відповідь, одиниці' }).click();
+  await expect(page.getByRole('status').filter({ hasText: `Одиниці: ${marks[0] ?? t.a % 10} − ${t.b % 10}.` })).toBeVisible();
   await typeNumber(page, t.result);
   await page.getByRole('button', { name: 'Перевірити' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Правильно!' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'кружечках' })).toHaveCount(0);
+});
+
+test('column: a right answer without borrow marks gets only a reminder', async ({ page }) => {
+  await createProfile(page);
+  await openLevel(page, '−2');
+  const t = await currentTask(page);
+  await typeNumber(page, t.result);
+  await page.getByRole('button', { name: 'Перевірити' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Правильно!' })).toContainText('кружечках зверху');
 });
 
 test('column: dragging 10 ones onto the tens exchanges them', async ({ page }) => {
@@ -146,25 +176,6 @@ test('a whole level: 10 right → 3 stars and coins on the map', async ({ page }
   await page.getByRole('button', { name: 'Карта' }).click();
   await expect(page.getByRole('button', { name: 'Рівень +1, зірок: 3' })).toBeVisible();
   await expect(page.locator('.coins').filter({ hasText: '35' })).toBeVisible();
-});
-
-test('column: disks are split only while needed and stay inside the panel', async ({ page }) => {
-  await createProfile(page);
-  await openLevel(page, '−5');
-  const panel = (await page.locator('.dp').boundingBox())!;
-  // Try to break every disk again and again, biggest place first.
-  for (const value of [1000, 100, 10]) {
-    const btn = page.getByRole('button', { name: `Розміняти кружечок ${value}`, exact: true });
-    if (!(await btn.count())) continue;
-    for (let i = 0; i < 12; i++) await btn.dispatchEvent('click');
-  }
-  await expect(page.locator('.dp-note')).toContainText('уже досить');
-  for (const place of [0, 1, 2]) expect(await page.getByTestId(`disk-${place}`).count()).toBeLessThanOrEqual(19);
-  for (const disk of await page.locator('.dp-disk').all()) {
-    const b = (await disk.boundingBox())!;
-    expect(b.y + b.height).toBeLessThanOrEqual(panel.y + panel.height);
-    expect(b.x + b.width).toBeLessThanOrEqual(panel.x + panel.width);
-  }
 });
 
 test('map: all five islands fit inside the 1280×800 stage', async ({ page }) => {

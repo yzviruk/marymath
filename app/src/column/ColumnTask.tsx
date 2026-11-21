@@ -8,6 +8,7 @@ import type { PetKind } from '../data/types';
 import { ColumnBoard } from './ColumnBoard';
 import {
   answerValue,
+  borrowMarksAt,
   clearAll,
   erase,
   focus,
@@ -15,8 +16,8 @@ import {
   missingBorrows,
   missingCarries,
   toggleCarry,
-  toggleCross,
   typeDigit,
+  wrongBorrows,
   wrongPlaces,
   type ColumnInput,
 } from './columnInput';
@@ -130,7 +131,8 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
       setJumpPlace(null);
       const reminders: string[] = [];
       if (missingCarries(input, column).length) reminders.push('Не забувай ставити 1 зверху, коли переносиш: торкнись кружечка.');
-      if (missingBorrows(input, column).length) reminders.push('Позначай, звідки позичаєш: торкнись цифри зверху.');
+      if (missingBorrows(input, column).length) reminders.push('Не забувай писати в кружечках зверху, що стало після позичання.');
+      else if (wrongBorrows(input, column).length) reminders.push('Перевір числа в кружечках зверху.');
       setSay(`Правильно! ${column.a} ${column.op} ${column.b} = ${column.result}. ${reminders.join(' ')}`.trim());
       return;
     }
@@ -182,12 +184,8 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
     if (column.op === '+') {
       return { ...s, carry: s.carry.map((v, q) => (q <= place && column.places[q].in ? 1 : v)) };
     }
-    const crossed = [...s.crossed];
-    for (let q = place + 1; q < column.width && column.places[q].in; q++) {
-      crossed[q] = true;
-      if (column.places[q].a !== 0) break;
-    }
-    return { ...s, crossed };
+    const marks = borrowMarksAt(column, place);
+    return { ...s, borrow: s.borrow.map((v, q) => marks[q] ?? v) };
   }
 
   function hint() {
@@ -219,7 +217,8 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
     <>
       <NumberLine path={linePath} labels="delta" />
       <div className="ct-body">
-        {diskMode !== 'none' || explaining ? (
+        {/* Subtraction: no disks while solving (they only confused), only in the explanation. */}
+        {(diskMode !== 'none' && column.op === '+') || explaining ? (
           <DiskPanel
             key={`${task.key}-${diskMode}-${explaining}`}
             column={column}
@@ -238,7 +237,6 @@ export function ColumnTask({ task, pet, petName, diskMode, onCheck, onDone }: Pr
             locked={!solving && !explaining}
             onCell={(cell) => solving && setInput((s) => focus(s, cell))}
             onCarry={(p) => solving && setInput((s) => toggleCarry(s, p))}
-            onCross={(p) => solving && setInput((s) => toggleCross(s, p))}
           />
           <div className="ct-pet">
             <Pet kind={pet} size={72} label={petName} />

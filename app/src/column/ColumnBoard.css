@@ -37,16 +37,8 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
-.cb-spacer,
-.cb-borrow {
+.cb-spacer {
   height: 40px;
-}
-.cb-borrow {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--accent);
-  display: flex;
-  align-items: flex-end;
 }
 .cb-carry {
   width: 40px;
@@ -86,17 +78,20 @@
 .cb-digit.p3 {
   color: var(--accent);
 }
-button.cb-top {
-  border: 0;
-  background: none;
-  padding: 0 8px;
-  border-radius: 16px;
+.cb-carry.cb-borrow {
+  width: 64px;
+  height: 48px;
+  border-radius: 24px;
+  font-size: 28px;
+}
+.cb-carry.cursor {
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 0 5px #e6e0ff;
+}
+.cb-digit.crossed {
   position: relative;
 }
-button.cb-top:active {
-  background: #f2f6fd;
-}
-.cb-top.crossed::after {
+.cb-digit.crossed::after {
   content: '';
   position: absolute;
   left: 4px;

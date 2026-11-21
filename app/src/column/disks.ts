@@ -28,19 +28,6 @@ export function split(d: Disks, place: number): Disks {
   return d.map((n, i) => (i === place ? n - 1 : i === place - 1 ? n + 10 : n));
 }
 
-/**
- * Subtraction: splitting a disk of `place` makes sense only while the place to its right lacks
- * disks for what is taken away there, or is empty and passes the borrow on (400 − 107).
- * Keeps the child from breaking disks without end.
- */
-export function splitHelps(column: ColumnInfo, d: Disks, place: number): boolean {
-  for (let q = place - 1; q >= 0; q--) {
-    if (d[q] < column.places[q].b) return true;
-    if (d[q] !== 0) return false;
-  }
-  return false;
-}
-
 /** Disk size (px) so that `count` disks fit a column of the panel with `columns` places. */
 export function diskSize(count: number, columns: number, base: number): number {
   const width = (344 - 8 * (columns - 1)) / columns - 14;

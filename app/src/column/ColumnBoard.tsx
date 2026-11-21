@@ -1,5 +1,5 @@
 import { digitCount, type ColumnInfo } from '../engine/column';
-import { shownTop, type Cell, type ColumnInput } from './columnInput';
+import type { Cell, ColumnInput } from './columnInput';
 import { PLACE } from './texts';
 import './ColumnBoard.css';
 
@@ -17,11 +17,13 @@ interface Props {
   locked: boolean;
   onCell: (cell: Cell) => void;
   onCarry: (place: number) => void;
-  onCross: (place: number) => void;
 }
 
-/** The column itself: place letters, carry boxes, the two numbers and the answer boxes. */
-export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCell, onCarry, onCross }: Props) {
+/**
+ * The column itself: place letters, the circles above (carry «1» in addition, the number after
+ * borrowing in subtraction), the two numbers and the answer boxes.
+ */
+export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCell, onCarry }: Props) {
   const places = Array.from({ length: column.width }, (_, i) => column.width - 1 - i); // left → right
   const aDigits = digitCount(column.a);
   const bDigits = digitCount(column.b);
@@ -41,7 +43,7 @@ export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCe
           </span>
         ))}
 
-        {/* Row above the numbers: carry boxes (addition) or the new top digits after borrowing. */}
+        {/* Row above the numbers: carry circles (addition) or borrow circles (subtraction). */}
         <span />
         {places.map((p) =>
           add ? (
@@ -60,10 +62,19 @@ export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCe
             ) : (
               <span key={`c${p}`} className="cb-spacer" />
             )
+          ) : p < aDigits ? (
+            <button
+              key={`c${p}`}
+              type="button"
+              className={`cb-carry cb-borrow${isCursor('borrow', p) ? ' cursor' : ''}${input.borrow[p] !== null ? ' filled' : ''}`}
+              aria-label={`Позичання: ${PLACE[p].toLowerCase()}`}
+              onClick={() => onCell({ kind: 'borrow', place: p })}
+              disabled={locked}
+            >
+              {input.borrow[p] ?? ''}
+            </button>
           ) : (
-            <span key={`c${p}`} className="cb-borrow" aria-live="polite">
-              {(input.crossed[p] || input.crossed[p + 1]) && p < aDigits ? shownTop(input, column, p) : ''}
-            </span>
+            <span key={`c${p}`} className="cb-spacer" />
           ),
         )}
 
@@ -71,20 +82,8 @@ export function ColumnBoard({ column, input, wrong, done, shakeKey, locked, onCe
         {places.map((p) =>
           p >= aDigits ? (
             <span key={`a${p}`} />
-          ) : !add && p > 0 ? (
-            <button
-              key={`a${p}`}
-              type="button"
-              className={`cb-digit cb-top p${p}${input.crossed[p] ? ' crossed' : ''}`}
-              aria-label={`${column.places[p].a} — ${PLACE[p].toLowerCase()}. ${input.crossed[p] ? 'Позичено' : 'Торкнись, щоб позичити'}`}
-              aria-pressed={input.crossed[p]}
-              onClick={() => onCross(p)}
-              disabled={locked}
-            >
-              {column.places[p].a}
-            </button>
           ) : (
-            <span key={`a${p}`} className={`cb-digit p${p}`}>
+            <span key={`a${p}`} className={`cb-digit p${p}${!add && input.borrow[p] !== null ? ' crossed' : ''}`}>
               {column.places[p].a}
             </span>
           ),

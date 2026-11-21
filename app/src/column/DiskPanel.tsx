@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
 import type { ColumnInfo } from '../engine/column';
-import { canMerge, canSplit, DISK_VALUE, diskSize, initialDisks, merge, split, splitHelps, type Disks } from './disks';
-import { PLACE, PLACE_GEN } from './texts';
+import { canMerge, DISK_VALUE, diskSize, initialDisks, merge, type Disks } from './disks';
+import { PLACE } from './texts';
 import './DiskPanel.css';
 
 interface Props {
   column: ColumnInfo;
-  /** Concrete mode: the child drags disks to exchange them. Otherwise `shown` is drawn as is. */
+  /** Concrete mode (addition only): the child drags 10 disks into 1. Otherwise `shown` is drawn as is. */
   draggable: boolean;
   /** Disks to show in the pictorial mode. */
   shown?: Disks;
@@ -42,16 +42,8 @@ export function DiskPanel({ column, draggable, shown }: Props) {
       } else {
         setNote(`Щоб обміняти, потрібно 10 кружечків «${DISK_VALUE[from]}».`);
       }
-    } else if (!add && to === from - 1) {
-      if (canSplit(own, from) && splitHelps(column, own, from)) {
-        setOwn(split(own, from));
-        setPulse(to);
-        setNote(`1 ${unitName(from)} → 10 кружечків «${DISK_VALUE[to]}»!`);
-      } else if (canSplit(own, from)) {
-        setNote(`${capital(PLACE_GEN[to])} уже досить — розмінювати не треба.`);
-      }
     } else {
-      setNote(add ? 'Тягни у сусідній стовпчик ліворуч.' : 'Тягни у сусідній стовпчик праворуч.');
+      setNote('Тягни у сусідній стовпчик ліворуч.');
     }
   }
 
@@ -120,9 +112,9 @@ export function DiskPanel({ column, draggable, shown }: Props) {
                 <button
                   type="button"
                   className="sr-only"
-                  onClick={() => exchange(place, add ? place + 1 : place - 1)}
+                  onClick={() => exchange(place, place + 1)}
                 >
-                  {add ? `Обміняти 10 кружечків ${DISK_VALUE[place]}` : `Розміняти кружечок ${DISK_VALUE[place]}`}
+                  {`Обміняти 10 кружечків ${DISK_VALUE[place]}`}
                 </button>
               )}
             </div>
@@ -145,8 +137,6 @@ export function DiskPanel({ column, draggable, shown }: Props) {
 
 /** Disk size per place when there are few of them; many disks get smaller to fit the column. */
 const BASE_SIZE = [30, 34, 40, 44];
-
-const capital = (w: string) => w[0].toUpperCase() + w.slice(1);
 
 function unitName(place: number): string {
   return ['одиниця', 'десяток', 'сотня', 'тисяча'][place];
